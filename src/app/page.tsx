@@ -86,14 +86,14 @@ export default function Dashboard() {
       case 'collections': {
         const d = collectionsData;
         downloadCSV(`EP_Collections_${date}`, ['Metric', 'Value'], [
-          ['Total Delinquent', d.totalDelinquent],
-          ['Collections MTD', `$${d.collectionsMTD}M`],
-          ['Save Rate', `${d.saveRate}%`],
-          ['Roll Rate', `${d.rollRate}%`],
-          ['Promise to Pay', d.promiseToPay],
-          ['Right Party Contacts', d.rightPartyContacts],
-          ['Avg Call Duration', d.avgCallDuration],
-          ['CPH', d.callsPerHour],
+          ['Contact Rate', `${d.combined.contactRate}%`],
+          ['Contact Rate Target', `${d.combined.contactRateTarget}%`],
+          ['PTP Capture', `${d.combined.ptpCapture}%`],
+          ['PTP Fulfill', `${d.combined.ptpFulfill}%`],
+          ['Payment Plans', `${d.combined.paymentPlans}%`],
+          ['Cure Rate', `${d.combined.cureRate}%`],
+          ['Save Rate', `${d.combined.saveRate}%`],
+          ['Save Rate Target', `${d.combined.saveRateTarget}%`],
         ]);
         break;
       }
