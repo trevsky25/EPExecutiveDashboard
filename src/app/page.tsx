@@ -16,6 +16,8 @@ import CreditRisk from '@/components/tabs/CreditRisk';
 import Sales from '@/components/tabs/Sales';
 import CustomReports from '@/components/tabs/CustomReports';
 import MerchantServices from '@/components/tabs/MerchantServices';
+import ChatButton from '@/components/chat/ChatButton';
+import ChatPanel from '@/components/chat/ChatPanel';
 import { Circle, Search } from 'lucide-react';
 import ExportButton from '@/components/ExportButton';
 import { downloadCSV } from '@/lib/exportCSV';
@@ -29,13 +31,13 @@ import {
 
 const tabTitles: Record<string, string> = {
   'executive-summary': 'Executive Summary',
+  'customer-care': 'Customer Care',
   'sales': 'Sales',
   'originations': 'Originations',
   'merchant-services': 'Merchant Services',
   'portfolio-health': 'Portfolio Health',
   'credit-risk': 'Credit & Risk',
   'collections': 'Collections',
-  'customer-care': 'Customer Care',
   'custom-reports': 'Custom Reports',
 };
 
@@ -47,6 +49,7 @@ export default function Dashboard() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedMerchant, setSelectedMerchant] = useState<MerchantProfile | null>(null);
   const [selectedTerritory, setSelectedTerritory] = useState<BranchDetail | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
 
   // Cmd+K / Ctrl+K to open search
   useEffect(() => {
@@ -260,6 +263,17 @@ export default function Dashboard() {
       <BranchProfilePanel
         territory={selectedTerritory}
         onClose={() => setSelectedTerritory(null)}
+      />
+
+      {/* Data-Aware Chatbot */}
+      <ChatButton
+        onClick={() => setChatOpen(prev => !prev)}
+        isOpen={chatOpen}
+        unreadCount={0}
+      />
+      <ChatPanel
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
       />
     </div>
   );

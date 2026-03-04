@@ -7,7 +7,10 @@ import SubTabFilter from '../SubTabFilter';
 import MerchantSearch from '../MerchantSearch';
 import MerchantProfilePanel from '../MerchantProfilePanel';
 import BranchProfilePanel from '../BranchProfilePanel';
+import StateDetailPanel from '../StateDetailPanel';
+import USHeatMap from '../USHeatMap';
 import Sparkline from '../Sparkline';
+import type { StateAggregation } from '@/lib/stateAggregation';
 import {
   salesData, repScorecard, enrollmentsByMonth, topMerchantsByVolume, approvalRateByIndustry,
   merchantProfiles, type MerchantProfile,
@@ -23,12 +26,13 @@ import {
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
 
-const SUB_TABS = ['Sales Overview', 'Enrollments', 'Territory', 'Production'];
+const SUB_TABS = ['Sales Overview', 'Enrollments', 'Territory', 'Production', 'Geographic'];
 
 export default function Sales({ dateRange }: { dateRange?: DateRange }) {
   const d = salesData.overview;
   const [selectedMerchant, setSelectedMerchant] = useState<MerchantProfile | null>(null);
   const [selectedTerritory, setSelectedTerritory] = useState<BranchDetail | null>(null);
+  const [selectedState, setSelectedState] = useState<StateAggregation | null>(null);
   const [activeSubTab, setActiveSubTab] = useState('Sales Overview');
 
   const handleMerchantClick = (name: string) => {
@@ -62,6 +66,11 @@ export default function Sales({ dateRange }: { dateRange?: DateRange }) {
       {activeSubTab === 'Enrollments' && renderEnrollments(handleTerritoryClick)}
       {activeSubTab === 'Territory' && renderTerritory(handleTerritoryClick)}
       {activeSubTab === 'Production' && renderProduction(handleMerchantClick)}
+      {activeSubTab === 'Geographic' && (
+        <ChartCard title="US Merchant Heat Map" badge={`${new Set(merchantProfiles.map(m => m.state)).size} States`} badgeColor="green">
+          <USHeatMap onStateClick={setSelectedState} />
+        </ChartCard>
+      )}
 
       <MerchantProfilePanel
         merchant={selectedMerchant}
@@ -70,6 +79,14 @@ export default function Sales({ dateRange }: { dateRange?: DateRange }) {
       <BranchProfilePanel
         territory={selectedTerritory}
         onClose={() => setSelectedTerritory(null)}
+      />
+      <StateDetailPanel
+        stateData={selectedState}
+        onClose={() => setSelectedState(null)}
+        onMerchantClick={(m) => {
+          setSelectedState(null);
+          setSelectedMerchant(m);
+        }}
       />
     </div>
   );
