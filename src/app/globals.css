@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-sidebar: #1a2332;
+  --color-sidebar-hover: #243044;
+  --color-sidebar-active: #2a3a52;
+  --color-content-bg: #f0f2f5;
+  --color-card-bg: #ffffff;
+  --color-ep-green: #10b981;
+  --color-ep-green-light: #d1fae5;
+  --color-ep-blue: #3b82f6;
+  --color-ep-blue-dark: #1e3a5f;
+  --color-ep-orange: #f59e0b;
+  --color-ep-red: #ef4444;
+  --color-ep-purple: #8b5cf6;
+  --color-ep-teal: #14b8a6;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-border: #e2e8f0;
+}
+
+body {
+  background: var(--color-content-bg);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Prevent Recharts from overflowing containers */
+.recharts-responsive-container {
+  min-width: 0 !important;
+}
+
+/* Hide scrollbar on tab navigation but keep scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Slide-in animation for panels */
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.animate-slideIn {
+  animation: slideIn 200ms ease-out forwards;
+}
+
+/* Fade-in-up for tab transitions */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeInUp {
+  animation: fadeInUp 250ms ease-out forwards;
+}
