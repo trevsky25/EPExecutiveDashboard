@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   TrendingUp,
@@ -12,6 +13,7 @@ import {
   FileBarChart,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from 'lucide-react';
 
 type NavItem = {
@@ -38,10 +40,18 @@ type SidebarProps = {
   onTabChange: (tab: string) => void;
   collapsed: boolean;
   onToggleCollapse: () => void;
+  onLogout?: () => void;
 };
 
-export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCollapse }: SidebarProps) {
+export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCollapse, onLogout }: SidebarProps) {
   const sections = ['OVERVIEW', 'SALES & GROWTH', 'PORTFOLIO & RISK', 'ANALYTICS'];
+
+  // Live clock
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <aside
@@ -52,13 +62,13 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
       <div className="px-4 py-5 flex items-center gap-2 border-b border-white/10">
         {!collapsed ? (
           <div>
-            <img src="/easypay-logo.svg" alt="EasyPay" className="h-7" />
-            <div className="text-[var(--color-ep-green)] text-[10px] tracking-[0.2em] uppercase mt-1.5">
+            <img src="/easypay-logo.svg" alt="EasyPay" className="h-10" />
+            <div className="text-[var(--color-ep-green)] text-[10px] tracking-[0.2em] uppercase mt-2">
               Executive Dashboard
             </div>
           </div>
         ) : (
-          <img src="/easypay-e.svg" alt="EP" className="h-8 mx-auto" />
+          <img src="/easypay-e.svg" alt="EP" className="h-9 mx-auto" />
         )}
       </div>
 
@@ -98,18 +108,33 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
         })}
       </nav>
 
-      {/* Collapse Toggle */}
-      <button
-        onClick={onToggleCollapse}
-        className="p-3 border-t border-white/10 text-white/40 hover:text-white/70 transition-colors flex items-center justify-center cursor-pointer"
-      >
-        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-      </button>
+      {/* Bottom controls */}
+      <div className="border-t border-white/10">
+        {/* Logout */}
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-white/50 hover:text-red-400 hover:bg-white/5 transition-colors cursor-pointer ${collapsed ? 'justify-center px-0' : ''}`}
+            title={collapsed ? 'Sign out' : undefined}
+          >
+            <LogOut size={16} />
+            {!collapsed && <span>Sign Out</span>}
+          </button>
+        )}
 
-      {/* Footer */}
+        {/* Collapse Toggle */}
+        <button
+          onClick={onToggleCollapse}
+          className="w-full p-3 text-white/40 hover:text-white/70 transition-colors flex items-center justify-center cursor-pointer"
+        >
+          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
+      </div>
+
+      {/* Footer — Live time */}
       {!collapsed && (
         <div className="px-4 py-3 text-[11px] text-white/30 border-t border-white/10">
-          Updated Daily · 6:00 AM EST
+          Updated Live · {now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })}
         </div>
       )}
     </aside>

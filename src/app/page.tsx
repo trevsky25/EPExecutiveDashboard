@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import LoginPage from '@/components/LoginPage';
 import Sidebar from '@/components/Sidebar';
 import DateRangeFilter from '@/components/DateRangeFilter';
 import GlobalSearch from '@/components/GlobalSearch';
@@ -39,6 +40,7 @@ const tabTitles: Record<string, string> = {
 };
 
 export default function Dashboard() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('executive-summary');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>({ period: 'MTD' });
@@ -164,6 +166,11 @@ export default function Dashboard() {
     }
   };
 
+  // ── Login Gate ──
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen overflow-x-hidden">
       <Sidebar
@@ -171,6 +178,7 @@ export default function Dashboard() {
         onTabChange={setActiveTab}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onLogout={() => setIsAuthenticated(false)}
       />
 
       {/* Main Content — dynamically offset by sidebar width */}
