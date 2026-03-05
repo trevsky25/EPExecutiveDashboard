@@ -92,3 +92,12 @@ body {
 .animate-chatBounce {
   animation: chatBounce 1.4s infinite;
 }
+
+/* Finley tooltip fade in */
+@keyframes finleyFadeIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-finleyFadeIn {
+  animation: finleyFadeIn 300ms ease-out forwards;
+}

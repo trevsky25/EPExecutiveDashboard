@@ -21,3 +21,12 @@ export type ChatMessage = {
 };
 
 export type QueryEngine = (query: string) => Promise<ChatResponse>;
+
+export type SavedReport = {
+  id: string;
+  name: string;
+  savedAt: number;
+  source: 'finley' | 'custom';
+  query?: string;
+  data: ChatResponseData;
+};

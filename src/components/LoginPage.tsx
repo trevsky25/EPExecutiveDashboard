@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Shield, Lock, ChevronRight } from 'lucide-react';
 
 type LoginPageProps = {
-  onLogin: () => void;
+  onLogin: (email: string) => void;
 };
 
 export default function LoginPage({ onLogin }: LoginPageProps) {
@@ -29,7 +29,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     setEmailError('');
     setStage('loading');
     setTimeout(() => {
-      onLogin();
+      onLogin(email);
     }, 2200);
   };
 

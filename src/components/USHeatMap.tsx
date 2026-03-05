@@ -80,7 +80,7 @@ export default function USHeatMap({ onStateClick }: Props) {
       <ComposableMap
         projection="geoAlbersUsa"
         width={900}
-        height={500}
+        height={380}
         style={{ width: '100%', height: 'auto' }}
       >
         <Geographies geography={GEO_URL}>

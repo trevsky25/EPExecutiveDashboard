@@ -2,41 +2,64 @@
 
 import type { ChatMessage as ChatMessageType } from '@/lib/chat/chatTypes';
 import ChatSuggestions from './ChatSuggestions';
-import { Bot } from 'lucide-react';
+import Image from 'next/image';
+import { Download, Bookmark } from 'lucide-react';
+import { downloadCSV } from '@/lib/exportCSV';
+import type { ChatResponseData } from '@/lib/chat/chatTypes';
 
 type Props = {
   message: ChatMessageType;
   onSuggestionClick: (suggestion: string) => void;
+  onSaveReport?: (name: string, data: ChatResponseData, query?: string) => void;
 };
 
-export default function ChatMessage({ message, onSuggestionClick }: Props) {
+function FinleyAvatar({ pose = '03' }: { pose?: string }) {
+  return (
+    <div className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5 mr-2 overflow-hidden">
+      <Image src={`/finley/finley-${pose}.svg`} alt="Finley" width={28} height={28} className="object-contain mt-1" />
+    </div>
+  );
+}
+
+function formatTime(ts: number): string {
+  const d = new Date(ts);
+  const h = d.getHours();
+  const m = d.getMinutes().toString().padStart(2, '0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hour = h % 12 || 12;
+  return `${hour}:${m} ${ampm}`;
+}
+
+export default function ChatMessage({ message, onSuggestionClick, onSaveReport }: Props) {
   const isUser = message.role === 'user';
+  const isWelcome = message.id === 'welcome';
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
-      {!isUser && (
-        <div className="w-6 h-6 rounded-full bg-[var(--color-ep-green)] flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">
-          <Bot size={14} className="text-white" />
-        </div>
-      )}
-      <div className={`max-w-[85%] ${isUser ? '' : ''}`}>
+      {!isUser && <FinleyAvatar pose={isWelcome ? '01' : '03'} />}
+      <div className={`max-w-[85%]`}>
         {/* Text bubble */}
         <div
-          className={`px-3 py-2 rounded-lg text-sm leading-relaxed ${
+          className={`px-3 py-2 rounded-xl text-sm leading-relaxed ${
             isUser
-              ? 'bg-[var(--color-ep-green)] text-white rounded-br-sm'
-              : 'bg-white border border-[var(--color-border)] text-[var(--color-text-primary)] rounded-bl-sm'
+              ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-br-sm shadow-sm'
+              : 'bg-white border border-[var(--color-border)] text-[var(--color-text-primary)] rounded-bl-sm shadow-sm'
           }`}
         >
           {message.content}
         </div>
 
+        {/* Timestamp */}
+        <div className={`text-[9px] text-[var(--color-text-muted)] mt-1 ${isUser ? 'text-right mr-1' : 'ml-1'}`}>
+          {formatTime(message.timestamp)}
+        </div>
+
         {/* Data attachment */}
         {message.data && (
-          <div className="mt-2">
-            {message.data.type === 'table' && <DataTable data={message.data} />}
-            {message.data.type === 'kpi' && <DataKPI data={message.data} />}
-            {message.data.type === 'list' && <DataList data={message.data} />}
+          <div className="mt-1.5">
+            {message.data.type === 'table' && <DataTable data={message.data} onSave={onSaveReport} />}
+            {message.data.type === 'kpi' && <DataKPI data={message.data} onSave={onSaveReport} />}
+            {message.data.type === 'list' && <DataList data={message.data} onSave={onSaveReport} />}
           </div>
         )}
 
@@ -51,17 +74,41 @@ export default function ChatMessage({ message, onSuggestionClick }: Props) {
 
 // ── Data renderers ──
 
-function DataTable({ data }: { data: { type: 'table'; title: string; headers: string[]; rows: (string | number)[][] } }) {
+function DataTable({ data, onSave }: { data: { type: 'table'; title: string; headers: string[]; rows: (string | number)[][] }; onSave?: (name: string, data: ChatResponseData) => void }) {
   const maxRows = 8;
   const visibleRows = data.rows.slice(0, maxRows);
   const remaining = data.rows.length - maxRows;
 
   return (
-    <div className="rounded-lg border border-[var(--color-border)] overflow-hidden bg-white">
-      <div className="px-3 py-1.5 bg-gray-50 border-b border-[var(--color-border)]">
+    <div className="rounded-xl border border-[var(--color-border)] overflow-hidden bg-white shadow-sm">
+      <div className="px-3 py-1.5 bg-gradient-to-r from-gray-50 to-white border-b border-[var(--color-border)] flex items-center justify-between">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
           {data.title}
         </span>
+        <div className="flex items-center gap-1">
+          {onSave && (
+            <button
+              onClick={() => onSave(data.title, data)}
+              className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-600 hover:bg-blue-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+              title="Save report"
+            >
+              <Bookmark size={10} />
+              Save
+            </button>
+          )}
+          <button
+            onClick={() => downloadCSV(
+              `Finley_${data.title.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().slice(0, 10)}`,
+              data.headers,
+              data.rows,
+            )}
+            className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+            title="Download as CSV"
+          >
+            <Download size={10} />
+            CSV
+          </button>
+        </div>
       </div>
       <div className="max-h-[240px] overflow-y-auto">
         <table className="w-full text-xs">
@@ -79,7 +126,7 @@ function DataTable({ data }: { data: { type: 'table'; title: string; headers: st
           </thead>
           <tbody>
             {visibleRows.map((row, i) => (
-              <tr key={i} className="border-b border-[var(--color-border)] last:border-0">
+              <tr key={i} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50/50 transition-colors">
                 {row.map((cell, j) => (
                   <td key={j} className="px-2.5 py-1.5 text-[var(--color-text-primary)] whitespace-nowrap">
                     {j === 0 ? <span className="font-medium">{cell}</span> : cell}
@@ -99,31 +146,83 @@ function DataTable({ data }: { data: { type: 'table'; title: string; headers: st
   );
 }
 
-function DataKPI({ data }: { data: { type: 'kpi'; items: { label: string; value: string; status?: 'green' | 'orange' | 'red' }[] } }) {
+function DataKPI({ data, onSave }: { data: { type: 'kpi'; items: { label: string; value: string; status?: 'green' | 'orange' | 'red' }[] }; onSave?: (name: string, data: ChatResponseData) => void }) {
   return (
-    <div className="grid grid-cols-2 gap-1.5">
-      {data.items.map((item) => {
-        const colorClass =
-          item.status === 'green' ? 'text-[var(--color-ep-green)]'
-          : item.status === 'orange' ? 'text-[var(--color-ep-orange)]'
-          : item.status === 'red' ? 'text-[var(--color-ep-red)]'
-          : 'text-[var(--color-text-primary)]';
-        return (
-          <div key={item.label} className="bg-gray-50 rounded-lg p-2.5 border border-[var(--color-border)]">
-            <div className="text-[9px] uppercase tracking-wider text-[var(--color-text-muted)] mb-0.5">{item.label}</div>
-            <div className={`text-sm font-bold tabular-nums ${colorClass}`}>{item.value}</div>
-          </div>
-        );
-      })}
+    <div>
+      <div className="grid grid-cols-2 gap-1.5">
+        {data.items.map((item) => {
+          const colorClass =
+            item.status === 'green' ? 'text-[var(--color-ep-green)]'
+            : item.status === 'orange' ? 'text-[var(--color-ep-orange)]'
+            : item.status === 'red' ? 'text-[var(--color-ep-red)]'
+            : 'text-[var(--color-text-primary)]';
+          return (
+            <div key={item.label} className="bg-gray-50 rounded-xl p-2.5 border border-[var(--color-border)]">
+              <div className="text-[9px] uppercase tracking-wider text-[var(--color-text-muted)] mb-0.5">{item.label}</div>
+              <div className={`text-sm font-bold tabular-nums ${colorClass}`}>{item.value}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex items-center gap-2 mt-1.5">
+        {onSave && (
+          <button
+            onClick={() => onSave('KPI Summary', data)}
+            className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-600 hover:bg-blue-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+            title="Save report"
+          >
+            <Bookmark size={10} />
+            Save
+          </button>
+        )}
+        <button
+          onClick={() => downloadCSV(
+            `Finley_KPIs_${new Date().toISOString().slice(0, 10)}`,
+            ['Metric', 'Value'],
+            data.items.map(item => [item.label, item.value]),
+          )}
+          className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+          title="Download as CSV"
+        >
+          <Download size={10} />
+          Download CSV
+        </button>
+      </div>
     </div>
   );
 }
 
-function DataList({ data }: { data: { type: 'list'; title: string; items: string[] } }) {
+function DataList({ data, onSave }: { data: { type: 'list'; title: string; items: string[] }; onSave?: (name: string, data: ChatResponseData) => void }) {
   return (
-    <div className="bg-white rounded-lg border border-[var(--color-border)] p-3">
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-2">
-        {data.title}
+    <div className="bg-white rounded-xl border border-[var(--color-border)] p-3 shadow-sm">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+          {data.title}
+        </span>
+        <div className="flex items-center gap-1">
+          {onSave && (
+            <button
+              onClick={() => onSave(data.title, data)}
+              className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-600 hover:bg-blue-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+              title="Save report"
+            >
+              <Bookmark size={10} />
+              Save
+            </button>
+          )}
+          <button
+            onClick={() => downloadCSV(
+              `Finley_${data.title.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().slice(0, 10)}`,
+              [data.title],
+              data.items.map(item => [item]),
+            )}
+            className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+            title="Download as CSV"
+          >
+            <Download size={10} />
+            CSV
+          </button>
+        </div>
       </div>
       <ul className="space-y-1">
         {data.items.map((item) => (
@@ -141,17 +240,18 @@ function DataList({ data }: { data: { type: 'list'; title: string; items: string
 export function TypingIndicator() {
   return (
     <div className="flex justify-start mb-3">
-      <div className="w-6 h-6 rounded-full bg-[var(--color-ep-green)] flex items-center justify-center flex-shrink-0 mt-0.5 mr-2">
-        <Bot size={14} className="text-white" />
-      </div>
-      <div className="bg-white border border-[var(--color-border)] rounded-lg rounded-bl-sm px-4 py-2.5 flex gap-1">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="w-1.5 h-1.5 rounded-full bg-[var(--color-text-muted)] animate-chatBounce"
-            style={{ animationDelay: `${i * 0.2}s` }}
-          />
-        ))}
+      <FinleyAvatar pose="04" />
+      <div className="bg-white border border-[var(--color-border)] rounded-xl rounded-bl-sm px-4 py-2.5 flex items-center gap-2 shadow-sm">
+        <div className="flex gap-1">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-chatBounce"
+              style={{ animationDelay: `${i * 0.2}s` }}
+            />
+          ))}
+        </div>
+        <span className="text-[10px] text-[var(--color-text-muted)] italic">Finley is thinking...</span>
       </div>
     </div>
   );

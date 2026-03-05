@@ -235,15 +235,15 @@ function handleMerchantLookup(entities: Entities): ChatResponse {
 
   if (results.length === 0) {
     return {
-      text: `No merchants found ${filterDesc}. We have ${merchantProfiles.length} merchants across ${new Set(merchantProfiles.map(m => m.state)).size} states.`,
+      text: `Hmm, no merchants match that ${filterDesc}. We've got ${merchantProfiles.length} merchants across ${new Set(merchantProfiles.map(m => m.state)).size} states — try broadening your search?`,
       suggestions: ['Show all merchants', 'Which states have merchants?', 'Show dormant merchants'],
     };
   }
 
   const topByVol = results.sort((a, b) => b.volumeMTD - a.volumeMTD);
   const text = results.length === 1
-    ? `Found ${results[0].name} ${filterDesc}. ${results[0].status} ${results[0].tier} merchant with ${fmt$(results[0].volumeMTD)} volume MTD.`
-    : `Found ${results.length} merchants ${filterDesc}. ${topByVol[0].name} leads with ${fmt$(topByVol[0].volumeMTD)} volume MTD.`;
+    ? `Here's what I found — ${results[0].name} ${filterDesc}. They're a ${results[0].status.toLowerCase()} ${results[0].tier} merchant pulling ${fmt$(results[0].volumeMTD)} volume MTD.`
+    : `I pulled up ${results.length} merchants ${filterDesc}. ${topByVol[0].name} is leading the pack with ${fmt$(topByVol[0].volumeMTD)} in volume.`;
 
   return {
     text,
@@ -268,7 +268,7 @@ function handleMerchantTop(entities: Entities): ChatResponse {
   const top = sorted.slice(0, limit);
 
   return {
-    text: `Here are the top ${top.length} merchants by ${sortKey}. ${top[0].name} leads with ${sortKey === 'volume' ? fmt$(top[0].volumeMTD) : sortKey === 'deals' ? `${top[0].dealsMTD} deals` : `${top[0].approvalRate}% approval`}.`,
+    text: `Your top ${top.length} merchants by ${sortKey} — ${top[0].name} is crushing it with ${sortKey === 'volume' ? fmt$(top[0].volumeMTD) : sortKey === 'deals' ? `${top[0].dealsMTD} deals` : `${top[0].approvalRate}% approval`}.`,
     data: merchantTable(top, `Top ${top.length} Merchants by ${sortKey}`),
     suggestions: ['Show declining merchants', 'Merchants by industry', 'Which merchants are dormant?'],
   };
@@ -287,13 +287,13 @@ function handleMerchantRisk(_entities: Entities): ChatResponse {
 
   if (riskMerchants.length === 0) {
     return {
-      text: 'No merchants currently flagged as at-risk. All merchants show stable or growing performance.',
+      text: 'Good news — no merchants are flagged at-risk right now. Everyone is looking stable or growing!',
       suggestions: ['Show top merchants', 'Portfolio health overview', 'Delinquency by industry'],
     };
   }
 
   return {
-    text: `Found ${riskMerchants.length} at-risk merchants. ${declining.length} show declining volume trends and ${highDelinq.length} have delinquency rates above 5%.`,
+    text: `Heads up — I'm seeing ${riskMerchants.length} merchants that need attention. ${declining.length} are trending down on volume and ${highDelinq.length} have delinquency above 5%.`,
     data: {
       type: 'table',
       title: 'At-Risk Merchants',
@@ -317,7 +317,7 @@ function handleRepLookup(entities: Entities): ChatResponse {
 
   if (!salesRep && !enrollRep) {
     return {
-      text: `Couldn't find a rep named "${name}". Available reps: ${ALL_REPS.map(r => r.name).join(', ')}.`,
+      text: `I don't have anyone named "${name}" in my records. Here are the reps I know: ${ALL_REPS.map(r => r.name).join(', ')}.`,
       suggestions: ['Show top reps', 'Rep leaderboard', 'Territory comparison'],
     };
   }
@@ -347,7 +347,7 @@ function handleRepLookup(entities: Entities): ChatResponse {
 
   const rep = salesRep || enrollRep!;
   return {
-    text: `Here's how ${name} is performing. They're assigned to territory ${rep.territory}.`,
+    text: `Here's the rundown on ${name} — they're working out of ${rep.territory}.`,
     data: { type: 'kpi', items },
     suggestions: [
       `Show merchants in ${rep.territory}`,
@@ -360,7 +360,7 @@ function handleRepLookup(entities: Entities): ChatResponse {
 function handleRepLeaderboard(): ChatResponse {
   const sorted = [...repScorecard].sort((a, b) => b.volumeMTD - a.volumeMTD);
   return {
-    text: `Here's the rep leaderboard by volume MTD. ${sorted[0].name} leads with ${fmt$(sorted[0].volumeMTD)}.`,
+    text: `Here's your leaderboard! ${sorted[0].name} is out front with ${fmt$(sorted[0].volumeMTD)} in volume MTD.`,
     data: {
       type: 'table',
       title: 'Rep Leaderboard',
@@ -379,7 +379,7 @@ function handleTerritoryLookup(entities: Entities): ChatResponse {
   if (!detail) {
     const available = Object.keys(branchDetails).join(', ');
     return {
-      text: `Territory "${code}" not found. Available territories: ${available}.`,
+      text: `I don't have a territory called "${code}" in the system. Here are the ones I know: ${available}.`,
       suggestions: Object.keys(branchDetails).map(t => `How is ${t} performing?`),
     };
   }
@@ -401,7 +401,7 @@ function handleTerritoryLookup(entities: Entities): ChatResponse {
   const topBranches = detail.topBranches.slice(0, 5);
 
   return {
-    text: `${code} (${detail.region}) is managed by ${detail.manager}. ${detail.activeBranches} of ${detail.branchCount} branches are active with ${detail.totalEnrollments} total enrollments.`,
+    text: `Here's the scoop on ${code} — it's the ${detail.region} region, managed by ${detail.manager}. ${detail.activeBranches} of ${detail.branchCount} branches are active, with ${detail.totalEnrollments} enrollments.`,
     data: { type: 'kpi', items },
     suggestions: [
       `Show top branches in ${code}`,
@@ -414,7 +414,7 @@ function handleTerritoryLookup(entities: Entities): ChatResponse {
 function handleTerritoryCompare(): ChatResponse {
   const sorted = [...territoryPerformance].sort((a, b) => b.deltaPct - a.deltaPct);
   return {
-    text: `Territory comparison by performance delta. ${sorted[0].territory} leads with +${sorted[0].deltaPct}% growth, while ${sorted[sorted.length - 1].territory} is at ${sorted[sorted.length - 1].deltaPct}%.`,
+    text: `Here's how your territories stack up. ${sorted[0].territory} is the star with +${sorted[0].deltaPct}% growth, while ${sorted[sorted.length - 1].territory} could use some love at ${sorted[sorted.length - 1].deltaPct}%.`,
     data: {
       type: 'table',
       title: 'Territory Comparison',
@@ -460,7 +460,7 @@ function handleKPIQuery(input: string): ChatResponse {
 
   // Default: show key KPIs
   return {
-    text: `Here are the key performance indicators.`,
+    text: `Here's your KPI snapshot — the numbers that matter most right now.`,
     data: {
       type: 'kpi',
       items: [
@@ -479,7 +479,7 @@ function handleKPIQuery(input: string): ChatResponse {
 function handleCollectionsQuery(): ChatResponse {
   const c = collectionsData.combined;
   return {
-    text: `Collections overview: Contact rate is ${c.contactRate}% (target ${c.contactRateTarget}%), cure rate ${c.cureRate}%, and save rate ${c.saveRate}%.`,
+    text: `Here's your collections pulse — contact rate is ${c.contactRate}% (target ${c.contactRateTarget}%), cure rate at ${c.cureRate}%, and save rate holding at ${c.saveRate}%.`,
     data: {
       type: 'kpi',
       items: [
@@ -498,7 +498,7 @@ function handleCollectionsQuery(): ChatResponse {
 function handleOriginationsQuery(): ChatResponse {
   const f = originationsData.funding;
   return {
-    text: `Originations MTD: ${f.fundedMTD.toLocaleString()} funded deals, ${fmt$(f.volumeMTD * 1_000_000)} volume, ${f.approvalRate}% approval rate.`,
+    text: `Originations are looking solid — ${f.fundedMTD.toLocaleString()} funded deals so far this month, ${fmt$(f.volumeMTD * 1_000_000)} in volume, with a ${f.approvalRate}% approval rate.`,
     data: {
       type: 'kpi',
       items: [
@@ -560,7 +560,7 @@ function handleStateLookup(entities: Entities): ChatResponse {
 function handleStateEnrollment(): ChatResponse {
   const sorted = [...enrollmentsByState].sort((a, b) => b.count - a.count);
   return {
-    text: `${sorted[0].state} leads with ${sorted[0].count} enrollments. ${enrollmentOverview.totalEnrollments} total enrollments across ${sorted.length} states.`,
+    text: `${sorted[0].state} is leading the way with ${sorted[0].count} enrollments! That's out of ${enrollmentOverview.totalEnrollments} total across ${sorted.length} states.`,
     data: {
       type: 'table',
       title: 'Enrollments by State',
@@ -602,7 +602,7 @@ function handleIndustryAnalysis(input: string, entities: Entities): ChatResponse
 
   // Default: show both
   return {
-    text: `Here's a cross-industry view with delinquency rates and approval rates.`,
+    text: `Here's the full industry breakdown — delinquency and approval rates side by side so you can spot the patterns.`,
     data: {
       type: 'table',
       title: 'Industry Analysis',
@@ -619,7 +619,7 @@ function handleIndustryAnalysis(input: string, entities: Entities): ChatResponse
 function handlePortfolioQuery(): ChatResponse {
   const p = portfolioHealthData.combined;
   return {
-    text: `Portfolio health: ${p.autoPayAccounts.toLocaleString()} auto-pay accounts (${(p.autoPayAccounts / (p.autoPayAccounts + p.manualPay) * 100).toFixed(1)}% of portfolio). Auto-pay delinquency is ${autoPayVsManualDelinquency[0].delinquent}% vs manual pay at ${autoPayVsManualDelinquency[1].delinquent}%.`,
+    text: `Portfolio check! ${p.autoPayAccounts.toLocaleString()} accounts are on auto-pay (${(p.autoPayAccounts / (p.autoPayAccounts + p.manualPay) * 100).toFixed(1)}% of the book). Auto-pay delinquency sits at ${autoPayVsManualDelinquency[0].delinquent}% vs ${autoPayVsManualDelinquency[1].delinquent}% for manual — auto-pay continues to perform better.`,
     data: {
       type: 'kpi',
       items: [
@@ -664,7 +664,7 @@ function handleCreditRiskQuery(input: string): ChatResponse {
 
   const o = creditRiskData.overview;
   return {
-    text: `Credit & Risk overview: ${o.totalFundedContracts.toLocaleString()} contracts, avg score ${o.avgDRScore}, FPD rate ${o.fpdRate}%, default rate ${o.defaultRate61}%.`,
+    text: `Here's your credit & risk landscape — ${o.totalFundedContracts.toLocaleString()} funded contracts, average score of ${o.avgDRScore}, FPD rate at ${o.fpdRate}%, and 61+ day default rate at ${o.defaultRate61}%.`,
     data: {
       type: 'kpi',
       items: [
@@ -683,7 +683,7 @@ function handleCreditRiskQuery(input: string): ChatResponse {
 function handleExecutiveSummary(): ChatResponse {
   const d = executiveSummary.combined;
   return {
-    text: `Executive summary: ${d.activeAccounts.toLocaleString()} active accounts, ${d.current0DPDPct}% current, save rate at ${d.saveRate}%, collections MTD $${d.collectionsMTD}M (${d.collectionsMTDPct}% of target).`,
+    text: `Here's the big picture — ${d.activeAccounts.toLocaleString()} active accounts, ${d.current0DPDPct}% are current, save rate is at ${d.saveRate}%, and collections have hit $${d.collectionsMTD}M (${d.collectionsMTDPct}% of target). Overall, things are moving.`,
     data: {
       type: 'kpi',
       items: [
@@ -701,7 +701,7 @@ function handleExecutiveSummary(): ChatResponse {
 
 function handleHelp(): ChatResponse {
   return {
-    text: "I can help you explore your EasyPay dashboard data. Here are some things you can ask about:",
+    text: "Happy to help! Here's everything I can dig into for you:",
     data: {
       type: 'list',
       title: 'What I can help with',
@@ -728,7 +728,7 @@ function handleHelp(): ChatResponse {
 
 function handleUnknown(): ChatResponse {
   return {
-    text: "I'm not sure I understand that question. Try asking about merchants, reps, territories, KPIs, or specific data areas.",
+    text: "Hmm, I'm not quite sure what you're after there. Try asking me about merchants, reps, territories, collections, or KPIs — I'm great with those!",
     suggestions: [
       'Show me merchants in Texas',
       'How is RIC-4 performing?',

@@ -18,7 +18,9 @@ import CustomReports from '@/components/tabs/CustomReports';
 import MerchantServices from '@/components/tabs/MerchantServices';
 import ChatButton from '@/components/chat/ChatButton';
 import ChatPanel from '@/components/chat/ChatPanel';
-import { Circle, Search } from 'lucide-react';
+import SavedReportsPanel from '@/components/SavedReportsPanel';
+import type { SavedReport, ChatResponseData } from '@/lib/chat/chatTypes';
+import { Circle, Search, ChevronDown, LogOut, FileText } from 'lucide-react';
 import ExportButton from '@/components/ExportButton';
 import { downloadCSV } from '@/lib/exportCSV';
 import type { DateRange } from '@/lib/dateFilter';
@@ -41,8 +43,26 @@ const tabTitles: Record<string, string> = {
   'custom-reports': 'Custom Reports',
 };
 
+type UserInfo = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  initials: string;
+};
+
+function parseUserFromEmail(email: string): UserInfo {
+  const local = email.split('@')[0];
+  // Try common formats: first.last, first_last, firstlast
+  const parts = local.split(/[._-]/);
+  const firstName = parts[0] ? parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase() : 'User';
+  const lastName = parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase() : '';
+  const initials = (firstName[0] + (lastName[0] || '')).toUpperCase();
+  return { email, firstName, lastName, initials };
+}
+
 export default function Dashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<UserInfo | null>(null);
   const [activeTab, setActiveTab] = useState('executive-summary');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>({ period: 'MTD' });
@@ -50,6 +70,50 @@ export default function Dashboard() {
   const [selectedMerchant, setSelectedMerchant] = useState<MerchantProfile | null>(null);
   const [selectedTerritory, setSelectedTerritory] = useState<BranchDetail | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [savedReportsOpen, setSavedReportsOpen] = useState(false);
+  const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
+
+  // Load saved reports from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('ep-saved-reports');
+      if (stored) setSavedReports(JSON.parse(stored));
+    } catch { /* ignore parse errors */ }
+  }, []);
+
+  // Persist saved reports to localStorage on change
+  useEffect(() => {
+    localStorage.setItem('ep-saved-reports', JSON.stringify(savedReports));
+  }, [savedReports]);
+
+  // Scroll shadow for sticky header
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const handler = () => setIsScrolled(window.scrollY > 0);
+    window.addEventListener('scroll', handler, { passive: true });
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
+
+  const handleSaveReport = useCallback((name: string, data: ChatResponseData, query?: string, source: 'finley' | 'custom' = 'finley') => {
+    const report: SavedReport = {
+      id: `report-${Date.now()}`,
+      name,
+      savedAt: Date.now(),
+      source,
+      query,
+      data,
+    };
+    setSavedReports(prev => [report, ...prev]);
+  }, []);
+
+  const handleSaveCustomReport = useCallback((name: string, data: ChatResponseData) => {
+    handleSaveReport(name, data, undefined, 'custom');
+  }, [handleSaveReport]);
+
+  const handleDeleteReport = useCallback((id: string) => {
+    setSavedReports(prev => prev.filter(r => r.id !== id));
+  }, []);
 
   // Cmd+K / Ctrl+K to open search
   useEffect(() => {
@@ -161,7 +225,7 @@ export default function Dashboard() {
       case 'sales':
         return <Sales dateRange={dateRange} />;
       case 'custom-reports':
-        return <CustomReports dateRange={dateRange} />;
+        return <CustomReports dateRange={dateRange} onSaveReport={handleSaveCustomReport} />;
       case 'merchant-services':
         return <MerchantServices dateRange={dateRange} />;
       default:
@@ -171,17 +235,20 @@ export default function Dashboard() {
 
   // ── Login Gate ──
   if (!isAuthenticated) {
-    return <LoginPage onLogin={() => setIsAuthenticated(true)} />;
+    return <LoginPage onLogin={(email) => {
+      setUser(parseUserFromEmail(email));
+      setIsAuthenticated(true);
+    }} />;
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div className="min-h-screen" style={{ overflowX: 'clip' }}>
       <Sidebar
         activeTab={activeTab}
         onTabChange={setActiveTab}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        onLogout={() => setIsAuthenticated(false)}
+        onLogout={() => { setIsAuthenticated(false); setUser(null); setProfileMenuOpen(false); }}
       />
 
       {/* Main Content — dynamically offset by sidebar width */}
@@ -189,57 +256,96 @@ export default function Dashboard() {
         className="min-h-screen transition-all duration-300"
         style={{ marginLeft: sidebarWidth }}
       >
-        {/* Header */}
-        <header className="sticky top-0 z-40 bg-[#f0f2f5] border-b border-[var(--color-border)] px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-semibold text-[var(--color-text-primary)]">
+        {/* Sticky Header */}
+        <div className={`sticky top-0 z-40 bg-white transition-shadow duration-200 ${isScrolled ? 'shadow-md' : ''}`}>
+          {/* Top row — Title, Search, Actions, Profile */}
+          <div className="px-6 py-2.5 flex items-center gap-4">
+            <h1 className="text-base font-semibold text-[var(--color-text-primary)] whitespace-nowrap">
               {tabTitles[activeTab] || 'Dashboard'}
             </h1>
-            <span className="flex items-center gap-1.5 text-xs text-[var(--color-ep-green)] bg-[var(--color-ep-green-light)] px-2.5 py-1 rounded-full font-medium">
-              <Circle size={6} fill="currentColor" />
+            <span className="flex items-center gap-1 text-[10px] text-[var(--color-ep-green)] bg-[var(--color-ep-green-light)] px-2 py-0.5 rounded-full font-medium">
+              <Circle size={5} fill="currentColor" />
               Live
             </span>
-          </div>
-          <div className="flex items-center gap-4">
+
+            {/* Search — grows to fill space */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--color-text-muted)] bg-white border border-[var(--color-border)] rounded-lg hover:border-[var(--color-text-muted)] transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--color-text-muted)] bg-[#f5f6f8] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-text-muted)] transition-colors cursor-pointer ml-auto max-w-[220px]"
             >
-              <Search size={14} />
+              <Search size={13} />
               <span className="hidden sm:inline">Search...</span>
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-text-muted)] bg-gray-50 rounded border border-gray-200 ml-2">
+              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-text-muted)] bg-white rounded border border-gray-200 ml-2">
                 {typeof navigator !== 'undefined' && /Mac/.test(navigator.userAgent) ? '⌘' : 'Ctrl'}K
               </kbd>
             </button>
+
             <DateRangeFilter value={dateRange} onChange={setDateRange} />
             <ExportButton onClick={handleExport} />
-            <div className="text-sm text-[var(--color-text-muted)] font-mono tracking-wider">
-              {today}
-            </div>
-          </div>
-        </header>
 
-        {/* Tab Navigation — horizontal scroll */}
-        <div className="px-6 pt-4">
-          <div className="flex gap-1 mb-5 overflow-x-auto pb-2 scrollbar-hide">
-            {Object.entries(tabTitles).map(([id, label]) => (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`px-3 py-1.5 text-[13px] rounded-md whitespace-nowrap transition-all cursor-pointer flex-shrink-0 ${
-                  activeTab === id
-                    ? 'bg-[var(--color-ep-green)] text-white font-medium shadow-sm'
-                    : 'text-[var(--color-text-secondary)] hover:bg-white hover:text-[var(--color-text-primary)]'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+            {/* Profile */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={() => setProfileMenuOpen(prev => !prev)}
+                  className="flex items-center gap-2 pl-1 pr-1 py-1 rounded-lg hover:bg-[#f5f6f8] transition-all cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1a2332] to-[#2d4a6f] flex items-center justify-center text-white text-xs font-bold">
+                    {user.initials}
+                  </div>
+                  <ChevronDown size={14} className={`text-[var(--color-text-muted)] transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {profileMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-50" onClick={() => setProfileMenuOpen(false)} />
+                    <div className="absolute right-0 top-full mt-1 w-64 bg-white rounded-xl shadow-lg border border-[var(--color-border)] z-50 overflow-hidden animate-fadeInUp">
+                      <div className="px-4 py-3 bg-gradient-to-r from-[#1a2332] to-[#2d4a6f]">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold">
+                            {user.initials}
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-white">{user.firstName} {user.lastName}</div>
+                            <div className="text-[11px] text-white/60">{user.email}</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="py-1">
+                        <button
+                          onClick={() => { setSavedReportsOpen(true); setProfileMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--color-text-secondary)] hover:bg-gray-50 transition-colors cursor-pointer"
+                        >
+                          <FileText size={15} className="text-[var(--color-text-muted)]" />
+                          Saved Reports
+                          {savedReports.length > 0 && (
+                            <span className="ml-auto text-[10px] font-medium bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+                              {savedReports.length}
+                            </span>
+                          )}
+                        </button>
+                        <div className="h-px bg-[var(--color-border)] mx-3 my-1" />
+                        <button
+                          onClick={() => { setIsAuthenticated(false); setUser(null); setProfileMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          <LogOut size={15} />
+                          Sign Out
+                        </button>
+                      </div>
+                      <div className="px-4 py-2 bg-gray-50 border-t border-[var(--color-border)]">
+                        <div className="text-[10px] text-[var(--color-text-muted)]">Signed in via Microsoft Entra ID</div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-6 pb-10">
+        <div className="px-6 pt-5 pb-10">
           <div key={activeTab} className="animate-fadeInUp">
             {renderTab()}
           </div>
@@ -274,6 +380,16 @@ export default function Dashboard() {
       <ChatPanel
         open={chatOpen}
         onClose={() => setChatOpen(false)}
+        userName={user?.firstName}
+        onSaveReport={handleSaveReport}
+      />
+
+      {/* Saved Reports Panel */}
+      <SavedReportsPanel
+        open={savedReportsOpen}
+        onClose={() => setSavedReportsOpen(false)}
+        reports={savedReports}
+        onDelete={handleDeleteReport}
       />
     </div>
   );

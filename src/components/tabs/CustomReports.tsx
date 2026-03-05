@@ -23,9 +23,10 @@ import {
 import {
   Search, X, Download, ChevronDown, ChevronUp, Check,
   Trophy, AlertTriangle, Map as MapIcon, Users, PieChart as PieChartIcon,
-  Rocket, BarChart3, Clock, Filter, Eye, ArrowUpDown, Calendar, Hash,
+  Rocket, BarChart3, Clock, Filter, Eye, ArrowUpDown, Calendar, Hash, Bookmark,
 } from 'lucide-react';
 import type { DateRange } from '@/lib/dateFilter';
+import type { ChatResponseData } from '@/lib/chat/chatTypes';
 
 // ── Types ──
 type DataSource = 'merchants' | 'reps' | 'territories';
@@ -429,7 +430,7 @@ function ReportTooltip({ active, payload, label }: { active?: boolean; payload?:
 }
 
 // ── Main Component ──
-export default function CustomReports({ dateRange }: { dateRange?: DateRange }) {
+export default function CustomReports({ dateRange, onSaveReport }: { dateRange?: DateRange; onSaveReport?: (name: string, data: ChatResponseData) => void }) {
   const [activeSubTab, setActiveSubTab] = useState('Report Builder');
 
   // Report Builder state
@@ -573,6 +574,38 @@ export default function CustomReports({ dateRange }: { dateRange?: DateRange }) 
     ]);
     downloadCSV(`EP_Custom_Report_${config.label.replace(/\s/g, '_')}_${date}`, headers, rows);
   }, [config, activeMetrics, processedData, groupBy]);
+
+  // ── Save current report to Saved Reports panel ──
+  const [saveToast, setSaveToast] = useState<string | null>(null);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [saveReportName, setSaveReportName] = useState('');
+  const saveNameInputRef = useRef<HTMLInputElement>(null);
+
+  const openSaveDialog = useCallback(() => {
+    if (!onSaveReport || processedData.length === 0) return;
+    const filterDesc = Object.keys(filters).length > 0
+      ? ` (${Object.keys(filters).length} filter${Object.keys(filters).length > 1 ? 's' : ''})`
+      : '';
+    setSaveReportName(`${config.label} Report${filterDesc}`);
+    setSaveDialogOpen(true);
+    setTimeout(() => saveNameInputRef.current?.select(), 50);
+  }, [onSaveReport, processedData, config, filters]);
+
+  const confirmSaveReport = useCallback(() => {
+    if (!onSaveReport || !saveReportName.trim()) return;
+    const headers = [groupBy ? config.dimensions[groupBy]?.label || 'Group' : config.nameKey, ...(groupBy ? ['Count'] : []), ...activeMetrics.map(m => m.label)];
+    const rows = processedData.map(row => [
+      String(row[groupBy ? '_groupName' : config.nameKey] || ''),
+      ...(groupBy ? [String(row._count || '')] : []),
+      ...activeMetrics.map(m => m.format(Number(row[m.key]) || 0)),
+    ]);
+    const name = saveReportName.trim();
+    const tableData: ChatResponseData = { type: 'table', title: name, headers, rows };
+    onSaveReport(name, tableData);
+    setSaveDialogOpen(false);
+    setSaveToast(name);
+    setTimeout(() => setSaveToast(null), 2000);
+  }, [onSaveReport, saveReportName, config, activeMetrics, processedData, groupBy]);
 
   // ── Compare search results ──
   const compareResults = useMemo(() => {
@@ -876,6 +909,18 @@ export default function CustomReports({ dateRange }: { dateRange?: DateRange }) 
 
             <div className="flex-1" />
 
+            {/* Save Report */}
+            {onSaveReport && (
+              <button
+                onClick={openSaveDialog}
+                disabled={processedData.length === 0}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 cursor-pointer disabled:opacity-40 disabled:cursor-default transition-colors"
+              >
+                <Bookmark size={12} />
+                Save Report
+              </button>
+            )}
+
             {/* Export */}
             <button
               onClick={exportReport}
@@ -1000,6 +1045,53 @@ export default function CustomReports({ dateRange }: { dateRange?: DateRange }) 
             <Filter size={32} className="text-[var(--color-text-muted)]" />
             <p className="text-sm text-[var(--color-text-muted)]">No results match your filters.</p>
             <button onClick={() => setFilters({})} className="text-xs text-[var(--color-ep-purple)] hover:underline cursor-pointer">Clear all filters</button>
+          </div>
+        )}
+
+        {/* Save name dialog */}
+        {saveDialogOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setSaveDialogOpen(false)} />
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-fadeInUp">
+              <div className="px-5 pt-5 pb-2">
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Save Report</h3>
+                <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Give your report a name for easy reference.</p>
+              </div>
+              <div className="px-5 py-3">
+                <input
+                  ref={saveNameInputRef}
+                  type="text"
+                  value={saveReportName}
+                  onChange={e => setSaveReportName(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') confirmSaveReport(); if (e.key === 'Escape') setSaveDialogOpen(false); }}
+                  placeholder="Report name"
+                  className="w-full px-3 py-2 text-sm border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 placeholder:text-[var(--color-text-muted)]"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-2 px-5 pb-5">
+                <button
+                  onClick={() => setSaveDialogOpen(false)}
+                  className="px-3 py-1.5 text-xs rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-gray-50 cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmSaveReport}
+                  disabled={!saveReportName.trim()}
+                  className="px-4 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 cursor-pointer disabled:opacity-40 disabled:cursor-default transition-colors"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Save toast */}
+        {saveToast && (
+          <div className="fixed bottom-6 right-6 z-50 bg-[#1a2332] text-white text-sm px-4 py-2.5 rounded-xl shadow-lg animate-fadeInUp flex items-center gap-2">
+            <Bookmark size={14} className="text-blue-400" />
+            Saved &ldquo;{saveToast}&rdquo;
           </div>
         )}
       </div>

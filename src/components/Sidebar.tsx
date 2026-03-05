@@ -131,10 +131,11 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
         </button>
       </div>
 
-      {/* Footer — Live time */}
+      {/* Footer — Live time + date */}
       {!collapsed && (
         <div className="px-4 py-3 text-[11px] text-white/30 border-t border-white/10">
-          Updated Live · {now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })}
+          <div>{now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase()}</div>
+          <div>Updated Live · {now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })}</div>
         </div>
       )}
     </aside>
