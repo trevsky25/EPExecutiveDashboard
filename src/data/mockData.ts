@@ -1082,3 +1082,33 @@ export const branchDetails: Record<string, BranchDetail> = {
     keyMetrics: { avgTicket: 1658, conversionRate: 18.6, fundingRate: 58.4, activeRate: 43.2 },
   },
 };
+
+// --- Previous Period Comparison Data ---
+// Used by Period-over-Period comparison feature in charts
+
+export const prevSaveRateTrend = [
+  { month: 'Aug', financeSave: 72, ltoSave: 58, target: 50 },
+  { month: 'Sep', financeSave: 68, ltoSave: 55, target: 50 },
+  { month: 'Oct', financeSave: 65, ltoSave: 52, target: 50 },
+  { month: 'Nov', financeSave: 60, ltoSave: 48, target: 50 },
+  { month: 'Dec', financeSave: 55, ltoSave: 42, target: 50 },
+  { month: 'Jan', financeSave: 50, ltoSave: 38, target: 50 },
+];
+
+export const prevMonthlyFundingTrend = [
+  { month: 'Aug', finance: 880, lto: 560 },
+  { month: 'Sep', finance: 920, lto: 600 },
+  { month: 'Oct', finance: 950, lto: 640 },
+  { month: 'Nov', finance: 980, lto: 660 },
+  { month: 'Dec', finance: 1020, lto: 690 },
+  { month: 'Jan', finance: 1050, lto: 710 },
+];
+
+export const prevSaveVsRollTrend = [
+  { month: 'Aug', saveRate: 74, rollRate: 10 },
+  { month: 'Sep', saveRate: 70, rollRate: 11 },
+  { month: 'Oct', saveRate: 66, rollRate: 13 },
+  { month: 'Nov', saveRate: 62, rollRate: 15 },
+  { month: 'Dec', saveRate: 55, rollRate: 18 },
+  { month: 'Jan', saveRate: 50, rollRate: 20 },
+];

@@ -1,5 +1,35 @@
 'use client';
 
+import type { CSSProperties } from 'react';
+
+/** Dark-aware styles for Recharts' built-in <Tooltip /> */
+export const TOOLTIP_STYLES: {
+  contentStyle: CSSProperties;
+  labelStyle: CSSProperties;
+  itemStyle: CSSProperties;
+  cursor: { fill: string };
+} = {
+  contentStyle: {
+    backgroundColor: 'var(--color-card-bg)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    padding: '8px 12px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    color: 'var(--color-text-primary)',
+  },
+  labelStyle: {
+    color: 'var(--color-text-muted)',
+    fontSize: 11,
+    marginBottom: 4,
+  },
+  itemStyle: {
+    color: 'var(--color-text-primary)',
+    fontSize: 12,
+    padding: '1px 0',
+  },
+  cursor: { fill: 'var(--color-hover-bg)' },
+};
+
 type Payload = {
   name: string;
   value: number;

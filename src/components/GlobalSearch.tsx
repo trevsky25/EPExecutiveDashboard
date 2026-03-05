@@ -182,7 +182,7 @@ export default function GlobalSearch({ open, onClose, onNavigateTab, onOpenMerch
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl border border-[var(--color-border)] overflow-hidden animate-fadeInUp"
+        className="relative w-full max-w-lg bg-[var(--color-card-bg)] rounded-xl shadow-2xl border border-[var(--color-border)] overflow-hidden animate-fadeInUp"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input */}
@@ -202,7 +202,7 @@ export default function GlobalSearch({ open, onClose, onNavigateTab, onOpenMerch
               <X size={16} />
             </button>
           )}
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-text-muted)] bg-gray-100 rounded border border-gray-200">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-text-muted)] bg-[var(--color-hover-bg)] rounded border border-[var(--color-border)]">
             ESC
           </kbd>
         </div>
@@ -230,7 +230,7 @@ export default function GlobalSearch({ open, onClose, onNavigateTab, onOpenMerch
                       onClick={item.action}
                       onMouseEnter={() => setSelectedIndex(idx)}
                       className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors cursor-pointer ${
-                        isSelected ? 'bg-[var(--color-ep-purple)]/5' : 'hover:bg-gray-50'
+                        isSelected ? 'bg-[var(--color-ep-purple)]/5' : 'hover:bg-[var(--color-hover-bg)]'
                       }`}
                     >
                       <div className={`flex-shrink-0 ${isSelected ? 'text-[var(--color-ep-purple)]' : 'text-[var(--color-text-muted)]'}`}>
@@ -243,7 +243,7 @@ export default function GlobalSearch({ open, onClose, onNavigateTab, onOpenMerch
                         <div className="text-[11px] text-[var(--color-text-muted)] truncate">{item.sublabel}</div>
                       </div>
                       {isSelected && (
-                        <kbd className="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-text-muted)] bg-gray-100 rounded border border-gray-200">
+                        <kbd className="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-text-muted)] bg-[var(--color-hover-bg)] rounded border border-[var(--color-border)]">
                           ↵
                         </kbd>
                       )}
@@ -256,10 +256,10 @@ export default function GlobalSearch({ open, onClose, onNavigateTab, onOpenMerch
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2 border-t border-[var(--color-border)] bg-gray-50/50 flex items-center gap-4 text-[10px] text-[var(--color-text-muted)]">
-          <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-gray-100 rounded border border-gray-200 font-mono">↑↓</kbd> Navigate</span>
-          <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-gray-100 rounded border border-gray-200 font-mono">↵</kbd> Open</span>
-          <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-gray-100 rounded border border-gray-200 font-mono">esc</kbd> Close</span>
+        <div className="px-4 py-2 border-t border-[var(--color-border)] bg-[var(--color-hover-bg)] flex items-center gap-4 text-[10px] text-[var(--color-text-muted)]">
+          <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-[var(--color-hover-bg)] rounded border border-[var(--color-border)] font-mono">↑↓</kbd> Navigate</span>
+          <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-[var(--color-hover-bg)] rounded border border-[var(--color-border)] font-mono">↵</kbd> Open</span>
+          <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-[var(--color-hover-bg)] rounded border border-[var(--color-border)] font-mono">esc</kbd> Close</span>
         </div>
       </div>
     </div>,

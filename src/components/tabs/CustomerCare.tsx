@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import KPICard from '../KPICard';
+import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
 import SubTabFilter from '../SubTabFilter';
 import { customerCareData, cphByTeam, callVolumeServiceLevel } from '@/data/mockData';
@@ -10,6 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 export default function CustomerCare({ dateRange }: { dateRange?: DateRange }) {
   const [subTab, setSubTab] = useState('Combined');
@@ -25,6 +27,8 @@ export default function CustomerCare({ dateRange }: { dateRange?: DateRange }) {
           {subTab} Customer Care
         </span>
       </div>
+
+      <InsightBanner tab="customer-care" />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
@@ -46,7 +50,7 @@ export default function CustomerCare({ dateRange }: { dateRange?: DateRange }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis type="number" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis dataKey="team" type="category" width={100} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Bar dataKey="cph" name="CPH" fill="#10b981" radius={[0, 4, 4, 0]} barSize={24} />
               <Bar dataKey="target" name="Target" fill="#e2e8f0" radius={[0, 4, 4, 0]} barSize={24} />
             </BarChart>
@@ -60,7 +64,7 @@ export default function CustomerCare({ dateRange }: { dateRange?: DateRange }) {
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis yAxisId="left" tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: '#94a3b8' }} domain={[70, 100]} tickFormatter={(v) => `${v}%`} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Bar yAxisId="left" dataKey="volume" name="Call Volume" fill="#14b8a6" radius={[4, 4, 0, 0]} />
               <Line yAxisId="right" type="monotone" dataKey="serviceLevel" name="Service Level" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6' }} />

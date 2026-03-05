@@ -1,7 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import KPICard from '../KPICard';
+import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
+import ComparisonToggle from '../ComparisonToggle';
+import AnnotationDot from '../AnnotationDot';
 import {
   executiveSummary,
   saveRateTrend,
@@ -9,18 +13,38 @@ import {
   delinquencyWaterfall,
   channelMix,
   kpiDetails,
+  prevSaveRateTrend,
+  prevMonthlyFundingTrend,
 } from '@/data/mockData';
+import { mergeComparisonData } from '@/lib/comparisonData';
+import { chartAnnotations } from '@/data/annotations';
 import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  AreaChart, Area, BarChart, Bar, ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 export default function ExecutiveSummary({ dateRange }: { dateRange?: DateRange }) {
+  const [showSaveRateComparison, setShowSaveRateComparison] = useState(false);
+  const [showFundingComparison, setShowFundingComparison] = useState(false);
+
   const d = executiveSummary;
   const dr = dateRange || { period: 'MTD' as const };
   const filteredSaveRate = filterTimeSeries(saveRateTrend, dr);
   const filteredFunding = filterTimeSeries(monthlyFundingTrend, dr);
+  const filteredPrevSaveRate = filterTimeSeries(prevSaveRateTrend, dr);
+  const filteredPrevFunding = filterTimeSeries(prevMonthlyFundingTrend, dr);
+  const saveRateAnnotations = chartAnnotations['save-rate-trend'] || [];
+  const fundingAnnotations = chartAnnotations['monthly-funding-trend'] || [];
+
+  const saveRateData = showSaveRateComparison
+    ? mergeComparisonData(filteredSaveRate, filteredPrevSaveRate, ['financeSave', 'ltoSave'])
+    : filteredSaveRate;
+
+  const fundingData = showFundingComparison
+    ? mergeComparisonData(filteredFunding, filteredPrevFunding, ['finance', 'lto'])
+    : filteredFunding;
 
   return (
     <div>
@@ -31,6 +55,8 @@ export default function ExecutiveSummary({ dateRange }: { dateRange?: DateRange 
           Combined Portfolio
         </span>
       </div>
+
+      <InsightBanner tab="executive-summary" />
 
       {/* Top KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
@@ -83,32 +109,53 @@ export default function ExecutiveSummary({ dateRange }: { dateRange?: DateRange 
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <ChartCard title="Save Rate — Finance vs LTO" badge="Declining" badgeColor="red">
+        <ChartCard title="Save Rate — Finance vs LTO" badge="Declining" badgeColor="red" headerRight={<ComparisonToggle enabled={showSaveRateComparison} onToggle={setShowSaveRateComparison} />}>
           <ResponsiveContainer width="100%" height={260}>
-            <AreaChart data={filteredSaveRate}>
+            <AreaChart data={saveRateData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-              <Tooltip formatter={(value: number) => `${value}%`} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => `${value}%`} />
               <Legend iconSize={8} />
               <Area type="monotone" dataKey="financeSave" name="Finance Save" stroke="#10b981" fill="#10b981" fillOpacity={0.15} strokeWidth={2} />
               <Area type="monotone" dataKey="ltoSave" name="LTO Save" stroke="#14b8a6" fill="#14b8a6" fillOpacity={0.1} strokeWidth={2} />
-              <Area type="monotone" dataKey="target" name="Target" stroke="#94a3b8" fill="transparent" strokeWidth={1} strokeDasharray="5 5" />
+              <Area type="monotone" dataKey="target" name="Target" stroke="#94a3b8" fill="transparent" strokeWidth={1} strokeDasharray="5 5" dot={(props: any) => {
+                const ann = saveRateAnnotations.find(a => a.dataKey === props.payload?.month);
+                if (ann) return <AnnotationDot key={ann.id} cx={props.cx} cy={props.cy} annotation={ann} />;
+                return null;
+              }} />
+              {showSaveRateComparison && (
+                <>
+                  <Area type="monotone" dataKey="prev_financeSave" name="Prev Finance Save" stroke="#10b981" fill="transparent" strokeWidth={1.5} strokeDasharray="4 4" opacity={0.4} />
+                  <Area type="monotone" dataKey="prev_ltoSave" name="Prev LTO Save" stroke="#14b8a6" fill="transparent" strokeWidth={1.5} strokeDasharray="4 4" opacity={0.4} />
+                </>
+              )}
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Monthly Funding — Finance vs LTO" badge="↑ 12.3%" badgeColor="green">
+        <ChartCard title="Monthly Funding — Finance vs LTO" badge="↑ 12.3%" badgeColor="green" headerRight={<ComparisonToggle enabled={showFundingComparison} onToggle={setShowFundingComparison} />}>
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={filteredFunding}>
+            <ComposedChart data={fundingData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Bar dataKey="finance" name="Finance" fill="#10b981" radius={[2, 2, 0, 0]} />
               <Bar dataKey="lto" name="LTO" fill="#14b8a6" radius={[2, 2, 0, 0]} />
-            </BarChart>
+              <Line dataKey="lto" stroke="transparent" dot={(props: any) => {
+                const ann = fundingAnnotations.find(a => a.dataKey === props.payload?.month);
+                if (ann) return <AnnotationDot key={ann.id} cx={props.cx} cy={props.cy} annotation={ann} />;
+                return null;
+              }} legendType="none" activeDot={false} />
+              {showFundingComparison && (
+                <>
+                  <Line type="monotone" dataKey="prev_finance" name="Prev Finance" stroke="#10b981" strokeWidth={1.5} strokeDasharray="4 4" opacity={0.4} dot={false} />
+                  <Line type="monotone" dataKey="prev_lto" name="Prev LTO" stroke="#14b8a6" strokeWidth={1.5} strokeDasharray="4 4" opacity={0.4} dot={false} />
+                </>
+              )}
+            </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
       </div>
@@ -121,7 +168,7 @@ export default function ExecutiveSummary({ dateRange }: { dateRange?: DateRange 
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="bucket" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}K` : v} />
-              <Tooltip formatter={(value: number) => value.toLocaleString()} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => value.toLocaleString()} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {delinquencyWaterfall.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
@@ -134,12 +181,12 @@ export default function ExecutiveSummary({ dateRange }: { dateRange?: DateRange 
         <ChartCard title="Collections Channel Mix">
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
-              <Pie data={channelMix} cx="50%" cy="50%" innerRadius={70} outerRadius={110} dataKey="value" nameKey="name" label={({ name, value }) => `${name}: ${value}%`}>
+              <Pie data={channelMix} cx="50%" cy="50%" innerRadius={60} outerRadius={90} dataKey="value" nameKey="name" label={({ name, value, cx: cxP, cy: cyP, midAngle, outerRadius: oR }) => { const RADIAN = Math.PI / 180; const r = (oR as number) + 18; const x = (cxP as number) + r * Math.cos(-midAngle * RADIAN); const y = (cyP as number) + r * Math.sin(-midAngle * RADIAN); return <text x={x} y={y} fill="var(--color-text-secondary)" textAnchor={x > (cxP as number) ? 'start' : 'end'} dominantBaseline="central" fontSize={11}>{`${name}: ${value}%`}</text>; }} labelLine={{ stroke: 'var(--color-text-muted)', strokeWidth: 1 }}>
                 {channelMix.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => `${value}%`} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => `${value}%`} />
               <Legend iconSize={8} />
             </PieChart>
           </ResponsiveContainer>

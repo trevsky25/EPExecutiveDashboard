@@ -6,6 +6,7 @@ import { X, TrendingUp, TrendingDown, Minus, Target, AlertTriangle, CheckCircle 
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell,
 } from 'recharts';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 export type KPIDetailData = {
   history?: { period: string; value: number }[];
@@ -67,7 +68,7 @@ export default function KPIDetailModal({
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto mx-4"
+        className="bg-[var(--color-card-bg)] rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto mx-4"
         style={{ borderTop: `3px solid ${statusAccent}` }}
       >
         {/* Header */}
@@ -96,7 +97,7 @@ export default function KPIDetailModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg hover:bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -115,13 +116,13 @@ export default function KPIDetailModal({
             <div className="text-[11px] uppercase tracking-wider text-[var(--color-text-muted)] font-medium mb-3">
               Historical Trend
             </div>
-            <div className="bg-[#f8fafc] rounded-lg p-4 border border-[var(--color-border)]">
+            <div className="bg-[var(--color-hover-bg)] rounded-lg p-4 border border-[var(--color-border)]">
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={detail.history}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="period" tick={{ fontSize: 11, fill: '#94a3b8' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} />
-                  <Tooltip />
+                  <Tooltip {...TOOLTIP_STYLES} />
                   <Line type="monotone" dataKey="value" stroke={statusAccent} strokeWidth={2} dot={{ r: 3, fill: statusAccent }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -135,7 +136,7 @@ export default function KPIDetailModal({
             <div className="text-[11px] uppercase tracking-wider text-[var(--color-text-muted)] font-medium mb-3">
               Breakdown
             </div>
-            <div className="bg-white rounded-lg border border-[var(--color-border)] overflow-hidden">
+            <div className="bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] overflow-hidden">
               <table className="w-full text-sm">
                 <tbody>
                   {detail.breakdown.map((row, i) => (

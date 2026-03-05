@@ -6,6 +6,7 @@ import { X, MapPin, Users, TrendingDown, Download, Building2, BarChart3 } from '
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { BranchDetail } from '@/data/mockData';
 import { downloadCSV } from '@/lib/exportCSV';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 type Props = {
   territory: BranchDetail | null;
@@ -66,11 +67,11 @@ export default function BranchProfilePanel({ territory, onClose }: Props) {
 
       {/* Panel */}
       <div
-        className="absolute right-0 top-0 bottom-0 w-full max-w-[520px] bg-white shadow-2xl flex flex-col animate-slideIn"
+        className="absolute right-0 top-0 bottom-0 w-full max-w-[520px] bg-[var(--color-card-bg)] shadow-2xl flex flex-col animate-slideIn"
         style={{ animationDuration: '200ms' }}
       >
         {/* Header */}
-        <div className="flex-shrink-0 px-6 py-4 border-b border-[var(--color-border)] bg-gradient-to-r from-blue-50 to-white">
+        <div className="flex-shrink-0 px-6 py-4 border-b border-[var(--color-border)] bg-gradient-to-r from-[var(--color-severity-blue-bg)] to-[var(--color-card-bg)]">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -83,7 +84,7 @@ export default function BranchProfilePanel({ territory, onClose }: Props) {
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-md hover:bg-[var(--color-hover-bg)] transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -126,13 +127,13 @@ export default function BranchProfilePanel({ territory, onClose }: Props) {
           {/* Volume Trend Chart */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">Performance Trend (6 Months)</h3>
-            <div className="bg-gray-50 rounded-lg p-3 border border-[var(--color-border)]">
+            <div className="bg-[var(--color-hover-bg)] rounded-lg p-3 border border-[var(--color-border)]">
               <ResponsiveContainer width="100%" height={160}>
                 <LineChart data={t.monthlyPerformance}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
-                  <Tooltip formatter={(value: number, name: string) => [name === 'volume' ? `$${value.toLocaleString()}` : value, name === 'volume' ? 'Volume' : 'Enrollments']} />
+                  <Tooltip {...TOOLTIP_STYLES} formatter={(value: number, name: string) => [name === 'volume' ? `$${value.toLocaleString()}` : value, name === 'volume' ? 'Volume' : 'Enrollments']} />
                   <Line type="monotone" dataKey="volume" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6' }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -164,7 +165,7 @@ export default function BranchProfilePanel({ territory, onClose }: Props) {
             <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-[var(--color-border)]">
+                  <tr className="bg-[var(--color-hover-bg)] border-b border-[var(--color-border)]">
                     <th className="text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)]">Branch</th>
                     <th className="text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)]">Location</th>
                     <th className="text-center px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)]">Status</th>
@@ -198,7 +199,7 @@ export default function BranchProfilePanel({ territory, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 px-6 py-4 border-t border-[var(--color-border)] bg-gray-50">
+        <div className="flex-shrink-0 px-6 py-4 border-t border-[var(--color-border)] bg-[var(--color-hover-bg)]">
           <button
             onClick={exportTerritoryReport}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-ep-blue)] text-white text-sm font-medium rounded-lg hover:brightness-110 transition-all cursor-pointer"
@@ -217,7 +218,7 @@ export default function BranchProfilePanel({ territory, onClose }: Props) {
 function KPI({ label, value, color }: { label: string; value: string; color?: 'green' | 'orange' | 'red' }) {
   const colorClass = color === 'green' ? 'text-[var(--color-ep-green)]' : color === 'orange' ? 'text-[var(--color-ep-orange)]' : color === 'red' ? 'text-[var(--color-ep-red)]' : 'text-[var(--color-text-primary)]';
   return (
-    <div className="bg-gray-50 rounded-lg p-3 border border-[var(--color-border)]">
+    <div className="bg-[var(--color-hover-bg)] rounded-lg p-3 border border-[var(--color-border)]">
       <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1">{label}</div>
       <div className={`text-base font-bold tabular-nums ${colorClass}`}>{value}</div>
     </div>

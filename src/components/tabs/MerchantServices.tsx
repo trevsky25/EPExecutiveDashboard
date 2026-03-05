@@ -1,6 +1,7 @@
 'use client';
 
 import KPICard from '../KPICard';
+import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
 import {
   merchantServicesData, merchantPartnerGrowth, merchantSupportVolume,
@@ -11,6 +12,7 @@ import {
   ResponsiveContainer, Cell,
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 export default function MerchantServices({ dateRange }: { dateRange?: DateRange }) {
   const d = merchantServicesData.overview;
@@ -23,6 +25,8 @@ export default function MerchantServices({ dateRange }: { dateRange?: DateRange 
           Merchant Services
         </span>
       </div>
+
+      <InsightBanner tab="merchant-services" />
 
       {/* KPIs Row 1 — Partner Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -175,7 +179,7 @@ export default function MerchantServices({ dateRange }: { dateRange?: DateRange 
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis yAxisId="left" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: '#94a3b8' }} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Bar yAxisId="right" dataKey="new" name="New Partners" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
               <Line yAxisId="left" type="monotone" dataKey="total" name="Total Partners" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
@@ -191,7 +195,7 @@ export default function MerchantServices({ dateRange }: { dateRange?: DateRange 
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis yAxisId="left" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: '#94a3b8' }} domain={[0, 30]} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Bar yAxisId="left" dataKey="opened" name="Opened" fill="#f59e0b" radius={[4, 4, 0, 0]} />
               <Bar yAxisId="left" dataKey="resolved" name="Resolved" fill="#10b981" radius={[4, 4, 0, 0]} />
@@ -219,7 +223,7 @@ export default function MerchantServices({ dateRange }: { dateRange?: DateRange 
           </thead>
           <tbody>
             {merchantTierDistribution.map((tier) => (
-              <tr key={tier.tier} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+              <tr key={tier.tier} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                 <td className="px-5 py-3 font-medium">{tier.tier}</td>
                 <td className="px-5 py-3 text-right tabular-nums">{tier.count.toLocaleString()}</td>
                 <td className="px-5 py-3 text-right tabular-nums font-semibold">${(tier.volume / 1000000).toFixed(2)}M</td>
@@ -248,7 +252,7 @@ export default function MerchantServices({ dateRange }: { dateRange?: DateRange 
           </thead>
           <tbody>
             {merchantTopIssues.map((issue) => (
-              <tr key={issue.category} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+              <tr key={issue.category} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                 <td className="px-5 py-3 font-medium">{issue.category}</td>
                 <td className="px-5 py-3 text-right tabular-nums">{issue.tickets}</td>
                 <td className="px-5 py-3 text-right tabular-nums">{issue.pct}%</td>

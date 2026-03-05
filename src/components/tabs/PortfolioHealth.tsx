@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import KPICard from '../KPICard';
+import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
 import SubTabFilter from '../SubTabFilter';
 import { portfolioHealthData, autoPayVsManualDelinquency, autoPayEnrollmentTrend, portfolioAging } from '@/data/mockData';
@@ -10,6 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 export default function PortfolioHealth({ dateRange }: { dateRange?: DateRange }) {
   const [subTab, setSubTab] = useState('Combined');
@@ -25,6 +27,8 @@ export default function PortfolioHealth({ dateRange }: { dateRange?: DateRange }
           {subTab} Portfolio Health
         </span>
       </div>
+
+      <InsightBanner tab="portfolio-health" />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -42,7 +46,7 @@ export default function PortfolioHealth({ dateRange }: { dateRange?: DateRange }
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${v}%`} />
               <YAxis dataKey="label" type="category" width={90} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-              <Tooltip formatter={(value: number) => `${value}%`} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => `${value}%`} />
               <Legend iconSize={8} />
               <Bar dataKey="current" name="Current" fill="#10b981" stackId="a" radius={[0, 0, 0, 0]} />
               <Bar dataKey="delinquent" name="Delinquent" fill="#ef4444" stackId="a" radius={[0, 4, 4, 0]} />
@@ -57,7 +61,7 @@ export default function PortfolioHealth({ dateRange }: { dateRange?: DateRange }
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis yAxisId="left" tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: '#94a3b8' }} domain={[75, 100]} tickFormatter={(v) => `${v}%`} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Bar yAxisId="left" dataKey="enrolled" name="Enrolled" fill="#10b981" radius={[4, 4, 0, 0]} />
               <Line yAxisId="right" type="monotone" dataKey="pct" name="% Current" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6' }} />
@@ -73,7 +77,7 @@ export default function PortfolioHealth({ dateRange }: { dateRange?: DateRange }
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
             <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
-            <Tooltip formatter={(value: number) => value.toLocaleString()} />
+            <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => value.toLocaleString()} />
             <Legend iconSize={8} />
             <Bar dataKey="current" name="Current" fill="#10b981" stackId="a" />
             <Bar dataKey="dpd1_15" name="1-15 DPD" fill="#14b8a6" stackId="a" />

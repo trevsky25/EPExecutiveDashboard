@@ -1,6 +1,7 @@
 'use client';
 
 import KPICard from '../KPICard';
+import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
 import { creditRiskData, defaultRateByVintage, creditScoreDistribution, fpdByChannel, delinquencyByIndustry } from '@/data/mockData';
 import {
@@ -8,6 +9,7 @@ import {
   ResponsiveContainer, Cell,
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 export default function CreditRisk({ dateRange }: { dateRange?: DateRange }) {
   const d = creditRiskData.overview;
@@ -20,6 +22,8 @@ export default function CreditRisk({ dateRange }: { dateRange?: DateRange }) {
           Credit & Risk Analytics
         </span>
       </div>
+
+      <InsightBanner tab="credit-risk" />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -47,7 +51,7 @@ export default function CreditRisk({ dateRange }: { dateRange?: DateRange }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="vintage" tick={{ fontSize: 11, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${v}%`} />
-              <Tooltip formatter={(value: number | null) => value !== null ? `${value}%` : 'N/A'} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number | null) => value !== null ? `${value}%` : 'N/A'} />
               <Legend iconSize={8} />
               <Line type="monotone" dataKey="def90" name="Def 90" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} connectNulls={false} />
               <Line type="monotone" dataKey="def120" name="Def 120" stroke="#f97316" strokeWidth={2} dot={{ r: 3 }} connectNulls={false} />
@@ -64,7 +68,7 @@ export default function CreditRisk({ dateRange }: { dateRange?: DateRange }) {
               <XAxis dataKey="range" tick={{ fontSize: 11, fill: '#94a3b8' }} />
               <YAxis yAxisId="left" tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${v}%`} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Bar yAxisId="left" dataKey="count" name="Contracts" fill="#8b5cf6" radius={[4, 4, 0, 0]} opacity={0.7} />
               <Line yAxisId="right" type="monotone" dataKey="defaultRate" name="Default Rate" stroke="#ef4444" strokeWidth={2} dot={{ r: 4, fill: '#ef4444' }} />
@@ -81,7 +85,7 @@ export default function CreditRisk({ dateRange }: { dateRange?: DateRange }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="channel" tick={{ fontSize: 11, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${v}%`} />
-              <Tooltip formatter={(value: number, name: string) => name === 'fpdRate' ? `${value}%` : value.toLocaleString()} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number, name: string) => name === 'fpdRate' ? `${value}%` : value.toLocaleString()} />
               <Bar dataKey="fpdRate" name="FPD Rate" radius={[4, 4, 0, 0]} barSize={40}>
                 {fpdByChannel.map((entry, index) => (
                   <Cell key={index} fill={entry.fpdRate > 8 ? '#ef4444' : entry.fpdRate > 6 ? '#f59e0b' : '#10b981'} />
@@ -92,9 +96,9 @@ export default function CreditRisk({ dateRange }: { dateRange?: DateRange }) {
         </ChartCard>
 
         {/* Delinquency by Industry Table */}
-        <div className="bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] p-5">
+        <div className="bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] p-5 overflow-x-auto">
           <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4">Delinquency by Industry</h3>
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[500px]">
             <thead>
               <tr className="border-b border-[var(--color-border)]">
                 <th className="text-left pb-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">Industry</th>

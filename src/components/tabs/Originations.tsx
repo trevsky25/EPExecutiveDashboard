@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import KPICard from '../KPICard';
+import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
 import SubTabFilter from '../SubTabFilter';
 import { originationsData, fundingTrend, approvalFunnel, merchantOnboardingTrend, merchantVerticalMix } from '@/data/mockData';
@@ -10,6 +11,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line,
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 export default function Originations({ dateRange }: { dateRange?: DateRange }) {
   const [subTab, setSubTab] = useState('Combined');
@@ -27,6 +29,8 @@ export default function Originations({ dateRange }: { dateRange?: DateRange }) {
           {subTab} Originations & Merchant Services
         </span>
       </div>
+
+      <InsightBanner tab="originations" />
 
       {/* Funding Performance */}
       <div className="flex items-center gap-2 mb-4">
@@ -89,7 +93,7 @@ export default function Originations({ dateRange }: { dateRange?: DateRange }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Bar dataKey="finance" name="Finance" fill="#10b981" radius={[2, 2, 0, 0]} />
               <Bar dataKey="lto" name="LTO" fill="#14b8a6" radius={[2, 2, 0, 0]} />
@@ -103,7 +107,7 @@ export default function Originations({ dateRange }: { dateRange?: DateRange }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="stage" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
-              <Tooltip formatter={(value: number) => value.toLocaleString()} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => value.toLocaleString()} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={50}>
                 {approvalFunnel.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
@@ -121,7 +125,7 @@ export default function Originations({ dateRange }: { dateRange?: DateRange }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Line type="monotone" dataKey="newMerchants" name="New Merchants" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
               <Line type="monotone" dataKey="activated" name="Activated" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
@@ -132,12 +136,12 @@ export default function Originations({ dateRange }: { dateRange?: DateRange }) {
         <ChartCard title="Merchant Vertical Mix">
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
-              <Pie data={merchantVerticalMix} cx="50%" cy="50%" innerRadius={65} outerRadius={105} dataKey="value" nameKey="name" label={({ name, value }) => `${name}: ${value}%`}>
+              <Pie data={merchantVerticalMix} cx="50%" cy="50%" innerRadius={55} outerRadius={85} dataKey="value" nameKey="name" label={({ name, value, cx: cxP, cy: cyP, midAngle, outerRadius: oR }) => { const RADIAN = Math.PI / 180; const r = (oR as number) + 18; const x = (cxP as number) + r * Math.cos(-midAngle * RADIAN); const y = (cyP as number) + r * Math.sin(-midAngle * RADIAN); return <text x={x} y={y} fill="var(--color-text-secondary)" textAnchor={x > (cxP as number) ? 'start' : 'end'} dominantBaseline="central" fontSize={11}>{`${name}: ${value}%`}</text>; }} labelLine={{ stroke: 'var(--color-text-muted)', strokeWidth: 1 }}>
                 {merchantVerticalMix.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => `${value}%`} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => `${value}%`} />
               <Legend iconSize={8} />
             </PieChart>
           </ResponsiveContainer>

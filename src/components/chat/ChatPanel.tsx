@@ -132,7 +132,7 @@ export default function ChatPanel({ open, onClose, userName, onSaveReport }: Pro
   if (!open || typeof document === 'undefined') return null;
 
   const panel = (
-    <div className="fixed bottom-6 right-6 w-[420px] max-h-[85vh] bg-white rounded-2xl shadow-2xl border border-[var(--color-border)] flex flex-col z-[9998] animate-slideUp max-sm:inset-4 max-sm:w-auto max-sm:max-h-none max-sm:bottom-4 max-sm:right-4 max-sm:rounded-xl overflow-hidden">
+    <div className="fixed bottom-6 right-6 w-[420px] max-h-[85vh] bg-[var(--color-card-bg)] rounded-2xl shadow-2xl border border-[var(--color-border)] flex flex-col z-[9998] animate-slideUp max-sm:inset-4 max-sm:w-auto max-sm:max-h-none max-sm:bottom-4 max-sm:right-4 max-sm:rounded-xl overflow-hidden">
       {/* Header */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)] bg-gradient-to-r from-emerald-600 to-teal-600">
         <div className="flex items-center gap-3">
@@ -167,7 +167,7 @@ export default function ChatPanel({ open, onClose, userName, onSaveReport }: Pro
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-0 min-h-0 bg-[#f8faf9]">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-0 min-h-0 bg-[var(--color-content-bg)]">
         {messages.map((msg, idx) => (
           <ChatMessage
             key={msg.id}
@@ -188,7 +188,7 @@ export default function ChatPanel({ open, onClose, userName, onSaveReport }: Pro
       )}
 
       {/* Input */}
-      <div className="flex-shrink-0 px-4 py-3 border-t border-[var(--color-border)] bg-white">
+      <div className="flex-shrink-0 px-4 py-3 border-t border-[var(--color-border)] bg-[var(--color-card-bg)]">
         <div className="flex items-center gap-2">
           <input
             ref={inputRef}
@@ -198,7 +198,7 @@ export default function ChatPanel({ open, onClose, userName, onSaveReport }: Pro
             onKeyDown={handleKeyDown}
             placeholder="Ask Finley anything..."
             disabled={isTyping}
-            className="flex-1 px-3 py-2 text-sm bg-gray-50 border border-[var(--color-border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 placeholder:text-[var(--color-text-muted)] disabled:opacity-50 transition-all"
+            className="flex-1 px-3 py-2 text-sm bg-[var(--color-hover-bg)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 placeholder:text-[var(--color-text-muted)] text-[var(--color-text-primary)] disabled:opacity-50 transition-all"
           />
           <button
             onClick={() => handleSend()}

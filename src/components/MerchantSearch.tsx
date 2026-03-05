@@ -62,7 +62,7 @@ export default function MerchantSearch({ onSelect }: MerchantSearchProps) {
           onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => { if (query.length >= 1) setOpen(true); }}
           placeholder="Search merchants by name, industry, state, rep..."
-          className="w-full pl-9 pr-8 py-2 text-sm bg-white border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-ep-green)] focus:border-transparent placeholder:text-[var(--color-text-muted)] transition-all"
+          className="w-full pl-9 pr-8 py-2 text-sm bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-ep-green)] focus:border-transparent placeholder:text-[var(--color-text-muted)] transition-all"
         />
         {query && (
           <button
@@ -75,12 +75,12 @@ export default function MerchantSearch({ onSelect }: MerchantSearchProps) {
       </div>
 
       {open && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[var(--color-border)] rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
           {results.map((m) => (
             <button
               key={m.id}
               onClick={() => { onSelect(m); setOpen(false); setQuery(''); }}
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-[var(--color-border)] last:border-0 cursor-pointer"
+              className="w-full text-left px-4 py-3 hover:bg-[var(--color-hover-bg)] transition-colors border-b border-[var(--color-border)] last:border-0 cursor-pointer"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ export default function MerchantSearch({ onSelect }: MerchantSearchProps) {
       )}
 
       {open && query.length >= 1 && results.length === 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[var(--color-border)] rounded-lg shadow-lg z-50 px-4 py-6 text-center text-sm text-[var(--color-text-muted)]">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-lg shadow-lg z-50 px-4 py-6 text-center text-sm text-[var(--color-text-muted)]">
           No merchants found matching &ldquo;{query}&rdquo;
         </div>
       )}

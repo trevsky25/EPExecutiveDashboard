@@ -16,7 +16,7 @@ export default function SubTabFilter({ tabs, activeTab, onTabChange }: SubTabFil
           className={`px-4 py-2 text-sm rounded-md transition-all cursor-pointer ${
             activeTab === tab
               ? 'bg-[var(--color-ep-green)] text-white font-medium'
-              : 'bg-white text-[var(--color-text-secondary)] hover:bg-gray-100 border border-[var(--color-border)]'
+              : 'bg-[var(--color-card-bg)] text-[var(--color-text-secondary)] hover:bg-[var(--color-hover-bg)] border border-[var(--color-border)]'
           }`}
         >
           {tab}

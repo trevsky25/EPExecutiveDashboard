@@ -1,20 +1,32 @@
 'use client';
 
 import KPICard from '../KPICard';
+import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
+import ComparisonToggle from '../ComparisonToggle';
 import StatusBadge from '../StatusBadge';
 import SubTabFilter from '../SubTabFilter';
+import AnnotationDot from '../AnnotationDot';
 import { useState } from 'react';
-import { collectionsData, saveVsRollTrend, recoveryPerformance } from '@/data/mockData';
+import { collectionsData, saveVsRollTrend, recoveryPerformance, prevSaveVsRollTrend } from '@/data/mockData';
+import { mergeComparisonData } from '@/lib/comparisonData';
+import { chartAnnotations } from '@/data/annotations';
 import {
   AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer,
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 export default function Collections({ dateRange }: { dateRange?: DateRange }) {
   const [subTab, setSubTab] = useState('Combined');
+  const [showSaveVsRollComparison, setShowSaveVsRollComparison] = useState(false);
   const d = collectionsData;
+  const saveVsRollAnnotations = chartAnnotations['save-vs-roll'] || [];
+
+  const saveVsRollData = showSaveVsRollComparison
+    ? mergeComparisonData(saveVsRollTrend, prevSaveVsRollTrend, ['saveRate', 'rollRate'])
+    : saveVsRollTrend;
 
   return (
     <div>
@@ -26,6 +38,8 @@ export default function Collections({ dateRange }: { dateRange?: DateRange }) {
           {subTab} Collections
         </span>
       </div>
+
+      <InsightBanner tab="collections" />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
@@ -39,16 +53,26 @@ export default function Collections({ dateRange }: { dateRange?: DateRange }) {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <ChartCard title="Save vs Roll Rate Trend">
+        <ChartCard title="Save vs Roll Rate Trend" headerRight={<ComparisonToggle enabled={showSaveVsRollComparison} onToggle={setShowSaveVsRollComparison} />}>
           <ResponsiveContainer width="100%" height={260}>
-            <AreaChart data={saveVsRollTrend}>
+            <AreaChart data={saveVsRollData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-              <Tooltip formatter={(value: number) => `${value}%`} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => `${value}%`} />
               <Legend iconSize={8} />
               <Area type="monotone" dataKey="saveRate" name="Save Rate" stroke="#10b981" fill="#10b981" fillOpacity={0.2} strokeWidth={2} />
-              <Area type="monotone" dataKey="rollRate" name="Roll Rate" stroke="#ef4444" fill="#ef4444" fillOpacity={0.15} strokeWidth={2} />
+              <Area type="monotone" dataKey="rollRate" name="Roll Rate" stroke="#ef4444" fill="#ef4444" fillOpacity={0.15} strokeWidth={2} dot={(props: any) => {
+                const ann = saveVsRollAnnotations.find(a => a.dataKey === props.payload?.month);
+                if (ann) return <AnnotationDot key={ann.id} cx={props.cx} cy={props.cy} annotation={ann} />;
+                return null;
+              }} />
+              {showSaveVsRollComparison && (
+                <>
+                  <Area type="monotone" dataKey="prev_saveRate" name="Prev Save Rate" stroke="#10b981" fill="transparent" strokeWidth={1.5} strokeDasharray="4 4" opacity={0.4} />
+                  <Area type="monotone" dataKey="prev_rollRate" name="Prev Roll Rate" stroke="#ef4444" fill="transparent" strokeWidth={1.5} strokeDasharray="4 4" opacity={0.4} />
+                </>
+              )}
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -60,7 +84,7 @@ export default function Collections({ dateRange }: { dateRange?: DateRange }) {
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis yAxisId="left" tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `${v}%`} />
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Line yAxisId="left" type="monotone" dataKey="recoveryPct" name="Recovery %" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
               <Line yAxisId="right" type="monotone" dataKey="amount" name="Amount ($)" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
@@ -89,7 +113,7 @@ export default function Collections({ dateRange }: { dateRange?: DateRange }) {
           </thead>
           <tbody>
             {d.dpdBuckets.map((row) => (
-              <tr key={row.bucket} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+              <tr key={row.bucket} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                 <td className="px-5 py-3.5 flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${row.status === 'Healthy' ? 'bg-[var(--color-ep-green)]' : row.status === 'Stable' ? 'bg-[var(--color-ep-green)]' : row.status === 'Watch' ? 'bg-[var(--color-ep-orange)]' : 'bg-[var(--color-ep-red)]'}`} />
                   <span className="font-medium">{row.bucket}</span>

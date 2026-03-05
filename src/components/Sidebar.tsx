@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
+  LayoutGrid,
   TrendingUp,
   Rocket,
   Store,
@@ -24,6 +25,7 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
+  { id: 'my-dashboard', label: 'My Dashboard', icon: <LayoutGrid size={18} />, section: 'OVERVIEW' },
   { id: 'executive-summary', label: 'Executive Summary', icon: <LayoutDashboard size={18} />, section: 'OVERVIEW' },
   { id: 'sales', label: 'Sales', icon: <TrendingUp size={18} />, section: 'SALES & GROWTH' },
   { id: 'originations', label: 'Originations', icon: <Rocket size={18} />, section: 'SALES & GROWTH' },
@@ -41,9 +43,11 @@ type SidebarProps = {
   collapsed: boolean;
   onToggleCollapse: () => void;
   onLogout?: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 };
 
-export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCollapse, onLogout }: SidebarProps) {
+export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCollapse, onLogout, mobileOpen, onMobileClose }: SidebarProps) {
   const sections = ['OVERVIEW', 'SALES & GROWTH', 'PORTFOLIO & RISK', 'ANALYTICS'];
 
   // Live clock
@@ -54,21 +58,20 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
   }, []);
 
   return (
-    <aside
-      className="fixed left-0 top-0 h-screen bg-[var(--color-sidebar)] text-white flex flex-col transition-all duration-300 z-50"
-      style={{ width: collapsed ? 64 : 240 }}
-    >
+    <>
+      {mobileOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onMobileClose} />
+      )}
+      <aside
+        className={`fixed left-0 top-0 h-screen bg-[var(--color-sidebar)] text-white flex flex-col transition-all duration-300 z-50 ${mobileOpen ? 'translate-x-0' : 'max-md:-translate-x-full'}`}
+        style={{ width: collapsed && !mobileOpen ? 64 : 240 }}
+      >
       {/* Logo */}
-      <div className="px-4 py-5 flex items-center gap-2 border-b border-white/10">
+      <div className="px-4 flex items-center border-b border-white/10" style={{ height: 60 }}>
         {!collapsed ? (
-          <div>
-            <img src="/easypay-logo.svg" alt="EasyPay" className="h-10" />
-            <div className="text-[var(--color-ep-green)] text-[10px] tracking-[0.2em] uppercase mt-2">
-              Executive Dashboard
-            </div>
-          </div>
+          <img src="/easypay-logo.svg" alt="EasyPay" className="h-10" />
         ) : (
-          <img src="/easypay-e.svg" alt="EP" className="h-9 mx-auto" />
+          <img src="/easypay-e.svg" alt="EP" className="h-8 mx-auto" />
         )}
       </div>
 
@@ -90,7 +93,7 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onTabChange(item.id)}
+                    onClick={() => { onTabChange(item.id); onMobileClose?.(); }}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all cursor-pointer ${
                       isActive
                         ? 'bg-[var(--color-sidebar-active)] text-[var(--color-ep-green)] border-l-2 border-[var(--color-ep-green)]'
@@ -138,6 +141,7 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
           <div>Updated Live · {now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })}</div>
         </div>
       )}
-    </aside>
+      </aside>
+    </>
   );
 }

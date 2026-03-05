@@ -74,7 +74,7 @@ export default function SavedReportsPanel({ open, onClose, reports, onDelete }: 
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="absolute right-0 top-0 bottom-0 w-full max-w-[520px] bg-white shadow-2xl flex flex-col animate-slideIn">
+      <div className="absolute right-0 top-0 bottom-0 w-full max-w-[520px] bg-[var(--color-card-bg)] shadow-2xl flex flex-col animate-slideIn">
         {/* Header */}
         <div className="flex-shrink-0 bg-gradient-to-r from-[#1a2332] to-[#2d4a6f] px-6 py-4">
           <div className="flex items-center justify-between">
@@ -102,7 +102,7 @@ export default function SavedReportsPanel({ open, onClose, reports, onDelete }: 
         <div className="flex-1 overflow-y-auto">
           {reports.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-8">
-              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--color-hover-bg)] flex items-center justify-center mb-4">
                 <FileText size={28} className="text-gray-300" />
               </div>
               <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">No saved reports yet</h3>
@@ -115,7 +115,7 @@ export default function SavedReportsPanel({ open, onClose, reports, onDelete }: 
               {reports.map(report => (
                 <div
                   key={report.id}
-                  className="bg-white border border-[var(--color-border)] rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+                  className="bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-xl overflow-hidden hover:shadow-md transition-shadow"
                 >
                   {/* Report header */}
                   <div className="px-4 py-3">
@@ -153,7 +153,7 @@ export default function SavedReportsPanel({ open, onClose, reports, onDelete }: 
                       <div className="flex items-center gap-1 flex-shrink-0">
                         <button
                           onClick={() => exportReportCSV(report)}
-                          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg hover:bg-[var(--color-hover-bg)] transition-colors cursor-pointer"
                           title="Export as CSV"
                         >
                           <Download size={14} className="text-[var(--color-text-muted)]" />
@@ -170,14 +170,14 @@ export default function SavedReportsPanel({ open, onClose, reports, onDelete }: 
                   </div>
 
                   {/* Data preview */}
-                  <div className="border-t border-[var(--color-border)] bg-gray-50/50">
+                  <div className="border-t border-[var(--color-border)] bg-[var(--color-hover-bg)]">
                     {report.data.type === 'table' && (
                       <div className="overflow-x-auto">
                         <table className="w-full text-[11px]">
                           <thead>
                             <tr className="border-b border-[var(--color-border)]">
                               {report.data.headers.map(h => (
-                                <th key={h} className="text-left px-3 py-1.5 text-[9px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)] bg-gray-50">
+                                <th key={h} className="text-left px-3 py-1.5 text-[9px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)] bg-[var(--color-hover-bg)]">
                                   {h}
                                 </th>
                               ))}
@@ -196,7 +196,7 @@ export default function SavedReportsPanel({ open, onClose, reports, onDelete }: 
                           </tbody>
                         </table>
                         {report.data.rows.length > 4 && (
-                          <div className="px-3 py-1 text-[9px] text-[var(--color-text-muted)] bg-gray-50">
+                          <div className="px-3 py-1 text-[9px] text-[var(--color-text-muted)] bg-[var(--color-hover-bg)]">
                             +{report.data.rows.length - 4} more rows
                           </div>
                         )}
@@ -212,7 +212,7 @@ export default function SavedReportsPanel({ open, onClose, reports, onDelete }: 
                             : item.status === 'red' ? 'text-[var(--color-ep-red)]'
                             : 'text-[var(--color-text-primary)]';
                           return (
-                            <div key={item.label} className="bg-white rounded-lg p-2 border border-[var(--color-border)]">
+                            <div key={item.label} className="bg-[var(--color-card-bg)] rounded-lg p-2 border border-[var(--color-border)]">
                               <div className="text-[8px] uppercase tracking-wider text-[var(--color-text-muted)] mb-0.5">{item.label}</div>
                               <div className={`text-xs font-bold tabular-nums ${colorClass}`}>{item.value}</div>
                             </div>
@@ -252,7 +252,7 @@ export default function SavedReportsPanel({ open, onClose, reports, onDelete }: 
 
         {/* Footer */}
         {reports.length > 0 && (
-          <div className="flex-shrink-0 px-4 py-3 bg-gray-50 border-t border-[var(--color-border)]">
+          <div className="flex-shrink-0 px-4 py-3 bg-[var(--color-hover-bg)] border-t border-[var(--color-border)]">
             <p className="text-[10px] text-[var(--color-text-muted)] text-center">
               Reports are stored locally in your browser
             </p>

@@ -6,6 +6,7 @@ import { X, Phone, Mail, MapPin, Calendar, User, TrendingUp, TrendingDown, Alert
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { MerchantProfile } from '@/data/mockData';
 import { exportMerchantReport } from '@/lib/exportCSV';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 type Props = {
   merchant: MerchantProfile | null;
@@ -61,11 +62,11 @@ export default function MerchantProfilePanel({ merchant, onClose }: Props) {
 
       {/* Panel */}
       <div
-        className="absolute right-0 top-0 bottom-0 w-full max-w-[520px] bg-white shadow-2xl flex flex-col animate-slideIn"
+        className="absolute right-0 top-0 bottom-0 w-full max-w-[520px] bg-[var(--color-card-bg)] shadow-2xl flex flex-col animate-slideIn"
         style={{ animationDuration: '200ms' }}
       >
         {/* Header */}
-        <div className="flex-shrink-0 px-6 py-4 border-b border-[var(--color-border)] bg-gradient-to-r from-[var(--color-ep-green-light)] to-white">
+        <div className="flex-shrink-0 px-6 py-4 border-b border-[var(--color-border)] bg-gradient-to-r from-[var(--color-ep-green-light)] to-[var(--color-card-bg)]">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -83,7 +84,7 @@ export default function MerchantProfilePanel({ merchant, onClose }: Props) {
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-md hover:bg-[var(--color-hover-bg)] transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -138,13 +139,13 @@ export default function MerchantProfilePanel({ merchant, onClose }: Props) {
           {/* Volume Trend Chart */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">Volume Trend (6 Months)</h3>
-            <div className="bg-gray-50 rounded-lg p-3 border border-[var(--color-border)]">
+            <div className="bg-[var(--color-hover-bg)] rounded-lg p-3 border border-[var(--color-border)]">
               <ResponsiveContainer width="100%" height={160}>
                 <LineChart data={m.monthlyVolume}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} />
-                  <Tooltip formatter={(value: number) => [`$${value.toLocaleString()}`, 'Volume']} />
+                  <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => [`$${value.toLocaleString()}`, 'Volume']} />
                   <Line type="monotone" dataKey="volume" stroke="#10b981" strokeWidth={2} dot={{ r: 3, fill: '#10b981' }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -158,19 +159,19 @@ export default function MerchantProfilePanel({ merchant, onClose }: Props) {
               Risk Indicators
             </h3>
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-gray-50 rounded-lg p-3 border border-[var(--color-border)] text-center">
+              <div className="bg-[var(--color-hover-bg)] rounded-lg p-3 border border-[var(--color-border)] text-center">
                 <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1">Delinquency</div>
                 <div className={`text-lg font-bold tabular-nums ${riskColor(m.delinquencyRate, [4, 7])}`}>
                   {m.delinquencyRate}%
                 </div>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3 border border-[var(--color-border)] text-center">
+              <div className="bg-[var(--color-hover-bg)] rounded-lg p-3 border border-[var(--color-border)] text-center">
                 <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1">Chargeback</div>
                 <div className={`text-lg font-bold tabular-nums ${riskColor(m.chargebackRate, [1, 2])}`}>
                   {m.chargebackRate}%
                 </div>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3 border border-[var(--color-border)] text-center">
+              <div className="bg-[var(--color-hover-bg)] rounded-lg p-3 border border-[var(--color-border)] text-center">
                 <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1">FPD Rate</div>
                 <div className={`text-lg font-bold tabular-nums ${riskColor(m.fpdRate, [5, 8])}`}>
                   {m.fpdRate}%
@@ -202,7 +203,7 @@ export default function MerchantProfilePanel({ merchant, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 px-6 py-4 border-t border-[var(--color-border)] bg-gray-50">
+        <div className="flex-shrink-0 px-6 py-4 border-t border-[var(--color-border)] bg-[var(--color-hover-bg)]">
           <button
             onClick={() => exportMerchantReport(m)}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-ep-green)] text-white text-sm font-medium rounded-lg hover:brightness-110 transition-all cursor-pointer"
@@ -221,7 +222,7 @@ export default function MerchantProfilePanel({ merchant, onClose }: Props) {
 function KPI({ label, value, color }: { label: string; value: string; color?: 'green' | 'orange' | 'red' }) {
   const colorClass = color === 'green' ? 'text-[var(--color-ep-green)]' : color === 'orange' ? 'text-[var(--color-ep-orange)]' : color === 'red' ? 'text-[var(--color-ep-red)]' : 'text-[var(--color-text-primary)]';
   return (
-    <div className="bg-gray-50 rounded-lg p-3 border border-[var(--color-border)]">
+    <div className="bg-[var(--color-hover-bg)] rounded-lg p-3 border border-[var(--color-border)]">
       <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1">{label}</div>
       <div className={`text-base font-bold tabular-nums ${colorClass}`}>{value}</div>
     </div>

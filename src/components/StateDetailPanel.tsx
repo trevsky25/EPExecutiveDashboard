@@ -56,11 +56,11 @@ export default function StateDetailPanel({ stateData, onClose, onMerchantClick }
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
 
       <div
-        className="absolute right-0 top-0 bottom-0 w-full max-w-[520px] bg-white shadow-2xl flex flex-col animate-slideIn"
+        className="absolute right-0 top-0 bottom-0 w-full max-w-[520px] bg-[var(--color-card-bg)] shadow-2xl flex flex-col animate-slideIn"
         style={{ animationDuration: '200ms' }}
       >
         {/* Header */}
-        <div className="flex-shrink-0 px-6 py-4 border-b border-[var(--color-border)] bg-gradient-to-r from-emerald-50 to-white">
+        <div className="flex-shrink-0 px-6 py-4 border-b border-[var(--color-border)] bg-gradient-to-r from-[var(--color-severity-green-bg)] to-[var(--color-card-bg)]">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -74,7 +74,7 @@ export default function StateDetailPanel({ stateData, onClose, onMerchantClick }
                 {s.merchantCount} merchant{s.merchantCount !== 1 ? 's' : ''} · {s.territories.length} territor{s.territories.length !== 1 ? 'ies' : 'y'}
               </div>
             </div>
-            <button onClick={onClose} className="p-1.5 rounded-md hover:bg-gray-100 transition-colors cursor-pointer">
+            <button onClick={onClose} className="p-1.5 rounded-md hover:bg-[var(--color-hover-bg)] transition-colors cursor-pointer">
               <X size={18} />
             </button>
           </div>
@@ -126,7 +126,7 @@ export default function StateDetailPanel({ stateData, onClose, onMerchantClick }
               <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="bg-gray-50 border-b border-[var(--color-border)]">
+                    <tr className="bg-[var(--color-hover-bg)] border-b border-[var(--color-border)]">
                       <th className="text-left px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)]">Merchant</th>
                       <th className="text-center px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)]">Status</th>
                       <th className="text-center px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)]">Tier</th>
@@ -138,7 +138,7 @@ export default function StateDetailPanel({ stateData, onClose, onMerchantClick }
                     {s.merchants.map(m => (
                       <tr
                         key={m.id}
-                        className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
+                        className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] cursor-pointer transition-colors"
                         onClick={() => onMerchantClick(m)}
                       >
                         <td className="px-3 py-2.5">
@@ -170,7 +170,7 @@ export default function StateDetailPanel({ stateData, onClose, onMerchantClick }
                 </table>
               </div>
             ) : (
-              <div className="text-center py-6 text-sm text-[var(--color-text-muted)] bg-gray-50 rounded-lg border border-[var(--color-border)]">
+              <div className="text-center py-6 text-sm text-[var(--color-text-muted)] bg-[var(--color-hover-bg)] rounded-lg border border-[var(--color-border)]">
                 No detailed merchant profiles for this state.
                 {s.enrollmentCount > 0 && (
                   <div className="text-xs mt-1">{s.enrollmentCount} enrollments recorded.</div>
@@ -181,7 +181,7 @@ export default function StateDetailPanel({ stateData, onClose, onMerchantClick }
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 px-6 py-4 border-t border-[var(--color-border)] bg-gray-50">
+        <div className="flex-shrink-0 px-6 py-4 border-t border-[var(--color-border)] bg-[var(--color-hover-bg)]">
           <button
             onClick={handleExport}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-ep-green)] text-white text-sm font-medium rounded-lg hover:brightness-110 transition-all cursor-pointer"
@@ -202,7 +202,7 @@ function MiniKPI({ label, value, color }: { label: string; value: string; color?
     : color === 'red' ? 'text-[var(--color-ep-red)]'
     : 'text-[var(--color-text-primary)]';
   return (
-    <div className="bg-gray-50 rounded-lg p-3 border border-[var(--color-border)]">
+    <div className="bg-[var(--color-hover-bg)] rounded-lg p-3 border border-[var(--color-border)]">
       <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1">{label}</div>
       <div className={`text-base font-bold tabular-nums ${colorClass}`}>{value}</div>
     </div>

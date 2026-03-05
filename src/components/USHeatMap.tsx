@@ -69,7 +69,7 @@ export default function USHeatMap({ onStateClick }: Props) {
             className={`px-3 py-1 text-[11px] rounded-md transition-all cursor-pointer ${
               colorMetric === key
                 ? 'bg-[var(--color-ep-green)] text-white font-medium'
-                : 'bg-gray-100 text-[var(--color-text-secondary)] hover:bg-gray-200'
+                : 'bg-[var(--color-hover-bg)] text-[var(--color-text-secondary)] hover:bg-[var(--color-hover-bg)]'
             }`}
           >
             {METRIC_LABELS[key]}
@@ -79,9 +79,10 @@ export default function USHeatMap({ onStateClick }: Props) {
 
       <ComposableMap
         projection="geoAlbersUsa"
-        width={900}
-        height={380}
-        style={{ width: '100%', height: 'auto' }}
+        width={800}
+        height={500}
+        projectionConfig={{ scale: 1000 }}
+        style={{ width: '100%', maxHeight: '420px', height: 'auto' }}
       >
         <Geographies geography={GEO_URL}>
           {({ geographies }: { geographies: Array<{ rsmKey?: string; id?: string; properties: { name: string } }> }) =>
@@ -150,7 +151,7 @@ export default function USHeatMap({ onStateClick }: Props) {
           style={{ background: 'linear-gradient(to right, #d1fae5, #10b981, #059669)' }}
         />
         <span className="text-[10px] text-[var(--color-text-muted)]">High</span>
-        <div className="w-3 h-2 rounded-sm bg-[#f1f5f9] border border-gray-300 ml-3" />
+        <div className="w-3 h-2 rounded-sm bg-[#f1f5f9] border border-[var(--color-border)] ml-3" />
         <span className="text-[10px] text-[var(--color-text-muted)]">No data</span>
       </div>
     </div>

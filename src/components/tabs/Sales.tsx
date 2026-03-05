@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import KPICard from '../KPICard';
+import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
 import SubTabFilter from '../SubTabFilter';
 import MerchantSearch from '../MerchantSearch';
@@ -25,6 +26,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { filterTimeSeries, type DateRange } from '@/lib/dateFilter';
+import { TOOLTIP_STYLES } from '@/components/CustomTooltip';
 
 const SUB_TABS = ['Sales Overview', 'Enrollments', 'Territory', 'Production', 'Geographic'];
 
@@ -61,6 +63,8 @@ export default function Sales({ dateRange }: { dateRange?: DateRange }) {
       </div>
 
       <SubTabFilter tabs={SUB_TABS} activeTab={activeSubTab} onTabChange={setActiveSubTab} />
+
+      <InsightBanner tab="sales" />
 
       {activeSubTab === 'Sales Overview' && renderOverview(d, repScorecard, handleMerchantClick, handleTerritoryClick)}
       {activeSubTab === 'Enrollments' && renderEnrollments(handleTerritoryClick)}
@@ -142,7 +146,7 @@ function renderOverview(
           </thead>
           <tbody>
             {reps.map((rep) => (
-              <tr key={rep.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+              <tr key={rep.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                 <td className="px-5 py-3 font-medium">{rep.name}</td>
                 <td className="px-5 py-3"><button onClick={() => handleTerritoryClick(rep.territory)} className="text-[var(--color-ep-blue)] hover:underline cursor-pointer font-medium">{rep.territory}</button></td>
                 <td className="px-5 py-3 text-right tabular-nums">{rep.merchants}</td>
@@ -171,7 +175,7 @@ function renderOverview(
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Legend iconSize={8} />
               <Line type="monotone" dataKey="enrolled" name="Enrolled" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
               <Line type="monotone" dataKey="activated" name="Activated" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
@@ -186,7 +190,7 @@ function renderOverview(
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="industry" tick={{ fontSize: 11, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-              <Tooltip formatter={(value: number) => `${value}%`} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => `${value}%`} />
               <Bar dataKey="rate" name="Approval Rate" radius={[4, 4, 0, 0]} barSize={40}>
                 {approvalRateByIndustry.map((entry, index) => (
                   <Cell key={index} fill={entry.rate >= 65 ? '#10b981' : entry.rate >= 58 ? '#f59e0b' : '#ef4444'} />
@@ -220,7 +224,7 @@ function renderOverview(
               const profile = merchantProfiles.find(p => p.name === m.name);
               const volumeData = profile?.monthlyVolume.map(v => v.volume) || [];
               return (
-                <tr key={m.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => handleMerchantClick(m.name)}>
+                <tr key={m.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors cursor-pointer" onClick={() => handleMerchantClick(m.name)}>
                   <td className="px-5 py-3 font-medium text-[var(--color-ep-blue)] hover:underline">{m.name}</td>
                   <td className="px-5 py-3 text-[var(--color-text-secondary)]">{m.industry}</td>
                   <td className="px-5 py-3 text-center">{m.state}</td>
@@ -264,7 +268,7 @@ function renderEnrollments(handleTerritoryClick: (territory: string) => void) {
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#94a3b8' }} />
             <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
-            <Tooltip />
+            <Tooltip {...TOOLTIP_STYLES} />
             <Line type="monotone" dataKey="count" name="Enrollments" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6' }} />
           </LineChart>
         </ResponsiveContainer>
@@ -275,12 +279,12 @@ function renderEnrollments(handleTerritoryClick: (territory: string) => void) {
         <ChartCard title="Product Mix">
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
-              <Pie data={enrollmentProductMix} cx="50%" cy="50%" innerRadius={65} outerRadius={100} dataKey="value" nameKey="name" label={({ name, pct }) => `${name}: ${pct}%`}>
+              <Pie data={enrollmentProductMix} cx="50%" cy="50%" innerRadius={55} outerRadius={80} dataKey="value" nameKey="name" label={({ name, pct, cx: cxP, cy: cyP, midAngle, outerRadius: oR }) => { const RADIAN = Math.PI / 180; const r = (oR as number) + 18; const x = (cxP as number) + r * Math.cos(-midAngle * RADIAN); const y = (cyP as number) + r * Math.sin(-midAngle * RADIAN); return <text x={x} y={y} fill="var(--color-text-secondary)" textAnchor={x > (cxP as number) ? 'start' : 'end'} dominantBaseline="central" fontSize={11}>{`${name}: ${pct}%`}</text>; }} labelLine={{ stroke: 'var(--color-text-muted)', strokeWidth: 1 }}>
                 {enrollmentProductMix.map((entry, i) => (
                   <Cell key={i} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => value} />
+              <Tooltip {...TOOLTIP_STYLES} formatter={(value: number) => value} />
               <Legend iconSize={8} />
             </PieChart>
           </ResponsiveContainer>
@@ -292,7 +296,7 @@ function renderEnrollments(handleTerritoryClick: (territory: string) => void) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis type="number" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis dataKey="state" type="category" width={100} tick={{ fontSize: 11, fill: '#94a3b8' }} />
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLES} />
               <Bar dataKey="count" name="Enrollments" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
             </BarChart>
           </ResponsiveContainer>
@@ -323,7 +327,7 @@ function renderEnrollments(handleTerritoryClick: (territory: string) => void) {
             {enrollmentReps.map((rep) => {
               const conv = rep.totalApps > 0 ? ((rep.fundedApps / rep.totalApps) * 100).toFixed(1) : '0';
               return (
-                <tr key={rep.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+                <tr key={rep.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                   <td className="px-5 py-3 font-medium">{rep.name}</td>
                   <td className="px-5 py-3"><button onClick={() => handleTerritoryClick(rep.territory)} className="text-[var(--color-ep-blue)] hover:underline cursor-pointer font-medium">{rep.territory}</button></td>
                   <td className="px-5 py-3 text-right tabular-nums font-semibold">{rep.enrollmentsMTD}</td>
@@ -353,7 +357,7 @@ function renderEnrollments(handleTerritoryClick: (territory: string) => void) {
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis type="number" tick={{ fontSize: 12, fill: '#94a3b8' }} />
             <YAxis dataKey="industry" type="category" width={140} tick={{ fontSize: 11, fill: '#94a3b8' }} />
-            <Tooltip />
+            <Tooltip {...TOOLTIP_STYLES} />
             <Bar dataKey="count" name="Enrollments" radius={[0, 4, 4, 0]} barSize={20}>
               {enrollmentsByIndustry.map((entry, i) => (
                 <Cell key={i} fill={entry.color} />
@@ -405,7 +409,7 @@ function renderTerritory(handleTerritoryClick: (territory: string) => void) {
           </thead>
           <tbody>
             {territoryPerformance.map((t) => (
-              <tr key={t.territory} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+              <tr key={t.territory} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                 <td className="px-5 py-3"><button onClick={() => handleTerritoryClick(t.territory)} className="font-semibold text-[var(--color-ep-blue)] hover:underline cursor-pointer">{t.territory}</button></td>
                 <td className="px-5 py-3 text-right tabular-nums">{t.branchCount}</td>
                 <td className="px-5 py-3 text-right tabular-nums text-[var(--color-ep-green)]">{t.activeBranches}</td>
@@ -444,7 +448,7 @@ function renderTerritory(handleTerritoryClick: (territory: string) => void) {
               </thead>
               <tbody>
                 {enrollmentReps.map((rep) => (
-                  <tr key={rep.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+                  <tr key={rep.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                     <td className="px-5 py-3 font-medium">{rep.name}</td>
                     <td className="px-5 py-3"><button onClick={() => handleTerritoryClick(rep.territory)} className="text-[var(--color-ep-blue)] hover:underline cursor-pointer font-medium">{rep.territory}</button></td>
                     <td className="px-5 py-3 text-right tabular-nums font-semibold">{rep.enrollmentsMTD}</td>
@@ -474,7 +478,7 @@ function renderTerritory(handleTerritoryClick: (territory: string) => void) {
               </thead>
               <tbody>
                 {isrAssignments.map((isr) => (
-                  <tr key={isr.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+                  <tr key={isr.name} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                     <td className="px-5 py-3 font-medium">{isr.name}</td>
                     <td className="px-5 py-3"><button onClick={() => handleTerritoryClick(isr.territory)} className="text-[var(--color-ep-blue)] hover:underline cursor-pointer font-medium">{isr.territory}</button></td>
                     <td className="px-5 py-3 text-right tabular-nums font-semibold">{isr.enrollmentsSupported}</td>
@@ -520,7 +524,7 @@ function renderProduction(handleMerchantClick: (name: string) => void) {
                   <span className="text-sm font-medium text-[var(--color-text-primary)]">{stage.stage}</span>
                   <span className="text-sm font-bold tabular-nums" style={{ color: stage.color }}>{stage.value.toLocaleString()}</span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-7 relative overflow-hidden">
+                <div className="w-full bg-[var(--color-hover-bg)] rounded-full h-7 relative overflow-hidden">
                   <div
                     className="h-full rounded-full flex items-center justify-end pr-3 transition-all duration-500"
                     style={{ width: `${widthPct}%`, backgroundColor: stage.color, opacity: 0.85 }}
@@ -559,7 +563,7 @@ function renderProduction(handleMerchantClick: (name: string) => void) {
           </thead>
           <tbody>
             {topProducingMerchants.map((m) => (
-              <tr key={m.rank} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50 transition-colors">
+              <tr key={m.rank} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                 <td className="px-4 py-3 text-center text-[var(--color-text-muted)] font-medium">{m.rank}</td>
                 <td className="px-5 py-3 font-medium text-[var(--color-ep-blue)]">
                   <button onClick={() => handleMerchantClick(m.name)} className="hover:underline cursor-pointer">{m.name}</button>

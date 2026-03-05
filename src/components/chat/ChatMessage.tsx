@@ -15,7 +15,7 @@ type Props = {
 
 function FinleyAvatar({ pose = '03' }: { pose?: string }) {
   return (
-    <div className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5 mr-2 overflow-hidden">
+    <div className="w-8 h-8 rounded-full bg-[var(--color-severity-green-bg)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0 mt-0.5 mr-2 overflow-hidden">
       <Image src={`/finley/finley-${pose}.svg`} alt="Finley" width={28} height={28} className="object-contain mt-1" />
     </div>
   );
@@ -43,7 +43,7 @@ export default function ChatMessage({ message, onSuggestionClick, onSaveReport }
           className={`px-3 py-2 rounded-xl text-sm leading-relaxed ${
             isUser
               ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-br-sm shadow-sm'
-              : 'bg-white border border-[var(--color-border)] text-[var(--color-text-primary)] rounded-bl-sm shadow-sm'
+              : 'bg-[var(--color-card-bg)] border border-[var(--color-border)] text-[var(--color-text-primary)] rounded-bl-sm shadow-sm'
           }`}
         >
           {message.content}
@@ -80,8 +80,8 @@ function DataTable({ data, onSave }: { data: { type: 'table'; title: string; hea
   const remaining = data.rows.length - maxRows;
 
   return (
-    <div className="rounded-xl border border-[var(--color-border)] overflow-hidden bg-white shadow-sm">
-      <div className="px-3 py-1.5 bg-gradient-to-r from-gray-50 to-white border-b border-[var(--color-border)] flex items-center justify-between">
+    <div className="rounded-xl border border-[var(--color-border)] overflow-hidden bg-[var(--color-card-bg)] shadow-sm">
+      <div className="px-3 py-1.5 bg-[var(--color-hover-bg)] border-b border-[var(--color-border)] flex items-center justify-between">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
           {data.title}
         </span>
@@ -89,7 +89,7 @@ function DataTable({ data, onSave }: { data: { type: 'table'; title: string; hea
           {onSave && (
             <button
               onClick={() => onSave(data.title, data)}
-              className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-600 hover:bg-blue-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-[10px] text-[var(--color-ep-blue)] hover:bg-[var(--color-hover-bg)] px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
               title="Save report"
             >
               <Bookmark size={10} />
@@ -102,7 +102,7 @@ function DataTable({ data, onSave }: { data: { type: 'table'; title: string; hea
               data.headers,
               data.rows,
             )}
-            className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-[10px] text-[var(--color-ep-green)] hover:bg-[var(--color-hover-bg)] px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
             title="Download as CSV"
           >
             <Download size={10} />
@@ -117,7 +117,7 @@ function DataTable({ data, onSave }: { data: { type: 'table'; title: string; hea
               {data.headers.map((h) => (
                 <th
                   key={h}
-                  className="text-left px-2.5 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)] bg-gray-50 sticky top-0"
+                  className="text-left px-2.5 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[var(--color-text-muted)] bg-[var(--color-hover-bg)] sticky top-0"
                 >
                   {h}
                 </th>
@@ -126,7 +126,7 @@ function DataTable({ data, onSave }: { data: { type: 'table'; title: string; hea
           </thead>
           <tbody>
             {visibleRows.map((row, i) => (
-              <tr key={i} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50/50 transition-colors">
+              <tr key={i} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)] transition-colors">
                 {row.map((cell, j) => (
                   <td key={j} className="px-2.5 py-1.5 text-[var(--color-text-primary)] whitespace-nowrap">
                     {j === 0 ? <span className="font-medium">{cell}</span> : cell}
@@ -138,7 +138,7 @@ function DataTable({ data, onSave }: { data: { type: 'table'; title: string; hea
         </table>
       </div>
       {remaining > 0 && (
-        <div className="px-3 py-1.5 text-[10px] text-[var(--color-text-muted)] bg-gray-50 border-t border-[var(--color-border)]">
+        <div className="px-3 py-1.5 text-[10px] text-[var(--color-text-muted)] bg-[var(--color-hover-bg)] border-t border-[var(--color-border)]">
           and {remaining} more...
         </div>
       )}
@@ -157,7 +157,7 @@ function DataKPI({ data, onSave }: { data: { type: 'kpi'; items: { label: string
             : item.status === 'red' ? 'text-[var(--color-ep-red)]'
             : 'text-[var(--color-text-primary)]';
           return (
-            <div key={item.label} className="bg-gray-50 rounded-xl p-2.5 border border-[var(--color-border)]">
+            <div key={item.label} className="bg-[var(--color-hover-bg)] rounded-xl p-2.5 border border-[var(--color-border)]">
               <div className="text-[9px] uppercase tracking-wider text-[var(--color-text-muted)] mb-0.5">{item.label}</div>
               <div className={`text-sm font-bold tabular-nums ${colorClass}`}>{item.value}</div>
             </div>
@@ -168,7 +168,7 @@ function DataKPI({ data, onSave }: { data: { type: 'kpi'; items: { label: string
         {onSave && (
           <button
             onClick={() => onSave('KPI Summary', data)}
-            className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-600 hover:bg-blue-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-[10px] text-[var(--color-ep-blue)] hover:bg-[var(--color-hover-bg)] px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
             title="Save report"
           >
             <Bookmark size={10} />
@@ -181,7 +181,7 @@ function DataKPI({ data, onSave }: { data: { type: 'kpi'; items: { label: string
             ['Metric', 'Value'],
             data.items.map(item => [item.label, item.value]),
           )}
-          className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+          className="flex items-center gap-1 text-[10px] text-[var(--color-ep-green)] hover:bg-[var(--color-hover-bg)] px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
           title="Download as CSV"
         >
           <Download size={10} />
@@ -194,7 +194,7 @@ function DataKPI({ data, onSave }: { data: { type: 'kpi'; items: { label: string
 
 function DataList({ data, onSave }: { data: { type: 'list'; title: string; items: string[] }; onSave?: (name: string, data: ChatResponseData) => void }) {
   return (
-    <div className="bg-white rounded-xl border border-[var(--color-border)] p-3 shadow-sm">
+    <div className="bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-border)] p-3 shadow-sm">
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
           {data.title}
@@ -203,7 +203,7 @@ function DataList({ data, onSave }: { data: { type: 'list'; title: string; items
           {onSave && (
             <button
               onClick={() => onSave(data.title, data)}
-              className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-600 hover:bg-blue-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-[10px] text-[var(--color-ep-blue)] hover:bg-[var(--color-hover-bg)] px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
               title="Save report"
             >
               <Bookmark size={10} />
@@ -216,7 +216,7 @@ function DataList({ data, onSave }: { data: { type: 'list'; title: string; items
               [data.title],
               data.items.map(item => [item]),
             )}
-            className="flex items-center gap-1 text-[10px] text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-[10px] text-[var(--color-ep-green)] hover:bg-[var(--color-hover-bg)] px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
             title="Download as CSV"
           >
             <Download size={10} />
@@ -241,7 +241,7 @@ export function TypingIndicator() {
   return (
     <div className="flex justify-start mb-3">
       <FinleyAvatar pose="04" />
-      <div className="bg-white border border-[var(--color-border)] rounded-xl rounded-bl-sm px-4 py-2.5 flex items-center gap-2 shadow-sm">
+      <div className="bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-xl rounded-bl-sm px-4 py-2.5 flex items-center gap-2 shadow-sm">
         <div className="flex gap-1">
           {[0, 1, 2].map((i) => (
             <div

@@ -51,7 +51,7 @@ export default function DateRangeFilter({ value, onChange }: DateRangeFilterProp
 
   return (
     <div className="relative flex items-center gap-1">
-      <div className="flex bg-white rounded-lg border border-[var(--color-border)] overflow-hidden">
+      <div className="flex bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] overflow-hidden">
         {periods.map((p) => (
           <button
             key={p.id}
@@ -59,7 +59,7 @@ export default function DateRangeFilter({ value, onChange }: DateRangeFilterProp
             className={`px-2.5 py-1 text-[11px] font-medium transition-colors cursor-pointer ${
               value.period === p.id
                 ? 'bg-[var(--color-ep-green)] text-white'
-                : 'text-[var(--color-text-secondary)] hover:bg-gray-50'
+                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-hover-bg)]'
             } ${p.id === 'Custom' ? 'flex items-center gap-1' : ''}`}
           >
             {p.id === 'Custom' && <Calendar size={11} />}
@@ -71,7 +71,7 @@ export default function DateRangeFilter({ value, onChange }: DateRangeFilterProp
       {showCustom && (
         <div
           ref={popoverRef}
-          className="absolute top-full right-0 mt-2 bg-white rounded-lg border border-[var(--color-border)] shadow-lg p-3 z-50 min-w-[240px]"
+          className="absolute top-full right-0 mt-2 bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] shadow-lg p-3 z-50 min-w-[240px]"
         >
           <div className="text-[11px] uppercase tracking-wider text-[var(--color-text-muted)] font-medium mb-2">
             Custom Range

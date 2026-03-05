@@ -1,9 +1,23 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { TrendingUp, TrendingDown, Minus, Info } from 'lucide-react';
 import KPIDetailModal, { type KPIDetailData } from './KPIDetailModal';
+import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
+
+/** Extract numeric value and prefix/suffix from formatted strings like "$12.4M" or "72.3%" */
+function parseDisplayValue(value: string | number): { num: number; prefix: string; suffix: string; decimals: number } {
+  if (typeof value === 'number') return { num: value, prefix: '', suffix: '', decimals: 0 };
+  const str = String(value);
+  const match = str.match(/^([^0-9-]*)([-]?[\d,]+\.?\d*)(.*)/);
+  if (!match) return { num: 0, prefix: '', suffix: str, decimals: -1 }; // -1 = non-numeric
+  const prefix = match[1];
+  const numStr = match[2].replace(/,/g, '');
+  const suffix = match[3];
+  const decimals = numStr.includes('.') ? numStr.split('.')[1].length : 0;
+  return { num: parseFloat(numStr) || 0, prefix, suffix, decimals };
+}
 
 type KPICardProps = {
   title: string;
@@ -79,7 +93,32 @@ export default function KPICard({
 }: KPICardProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   const iconRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Trigger animation once when card enters viewport
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setIsInView(true); observer.disconnect(); } },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Parse value and build animated display
+  const { num, prefix, suffix, decimals } = parseDisplayValue(value);
+  const formatFn = useCallback((v: number) => {
+    if (decimals <= 0) return `${prefix}${Math.round(v).toLocaleString()}${suffix}`;
+    return `${prefix}${v.toFixed(decimals)}${suffix}`;
+  }, [num, prefix, suffix, decimals]);
+  const animatedValue = useAnimatedNumber(isInView ? num : 0, 600, formatFn);
+  // Use static value for non-numeric or zero values
+  const displayValue = decimals === -1 || num === 0 ? value : animatedValue;
+
   const statusColors = {
     green: 'border-t-[var(--color-ep-green)]',
     orange: 'border-t-[var(--color-ep-orange)]',
@@ -96,6 +135,7 @@ export default function KPICard({
   return (
     <>
       <div
+        ref={cardRef}
         className={`bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] border-t-[3px] ${statusColors[status]} p-4 flex flex-col gap-1 min-w-0 overflow-hidden cursor-pointer hover:shadow-md hover:border-[var(--color-text-muted)] transition-all`}
         onClick={() => setShowModal(true)}
       >
@@ -117,7 +157,7 @@ export default function KPICard({
           )}
         </div>
         <div className="text-2xl font-bold tabular-nums text-[var(--color-text-primary)] tracking-tight truncate">
-          {value}
+          {displayValue}
         </div>
         <div className="flex items-center gap-1.5 mt-1 flex-wrap">
           {trend !== undefined && trend !== null && (
@@ -146,7 +186,7 @@ export default function KPICard({
                 {Math.round(targetProgress)}%
               </span>
             </div>
-            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-[var(--color-hover-bg)] rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${targetProgress >= 100 ? 'bg-[var(--color-ep-green)]' : targetProgress >= 80 ? 'bg-[var(--color-ep-orange)]' : 'bg-[var(--color-ep-red)]'}`}
                 style={{ width: `${Math.min(targetProgress, 100)}%` }}

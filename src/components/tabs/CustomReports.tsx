@@ -192,7 +192,7 @@ function MultiSelectDropdown({
         <ChevronDown size={12} />
       </button>
       {open && (
-        <div className="absolute top-full left-0 mt-1 bg-white rounded-lg border border-[var(--color-border)] shadow-lg z-50 min-w-[180px] py-1 max-h-[240px] overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1 bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] shadow-lg z-50 min-w-[180px] py-1 max-h-[240px] overflow-y-auto">
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-[var(--color-border)]">
             <button onClick={() => onChange(options)} className="text-[10px] text-[var(--color-ep-blue)] hover:underline cursor-pointer">Select All</button>
             <button onClick={() => onChange([])} className="text-[10px] text-[var(--color-text-muted)] hover:underline cursor-pointer">Clear</button>
@@ -201,7 +201,7 @@ function MultiSelectDropdown({
             <button
               key={opt}
               onClick={() => toggle(opt)}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-gray-50 cursor-pointer"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-[var(--color-hover-bg)] cursor-pointer"
             >
               <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${
                 selected.includes(opt) ? 'bg-[var(--color-ep-purple)] border-[var(--color-ep-purple)]' : 'border-gray-300'
@@ -375,10 +375,10 @@ function AddFilterMenu({
         Add Filter
       </button>
       {open && (
-        <div className="absolute top-full left-0 mt-1 bg-white rounded-lg border border-[var(--color-border)] shadow-lg z-50 min-w-[200px] py-1">
+        <div className="absolute top-full left-0 mt-1 bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] shadow-lg z-50 min-w-[200px] py-1">
           {Array.from(groups.entries()).map(([groupLabel, items]) => (
             <div key={groupLabel}>
-              <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-semibold border-b border-[var(--color-border)] bg-gray-50/50">
+              <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-semibold border-b border-[var(--color-border)] bg-[var(--color-hover-bg)]">
                 {groupLabel}
               </div>
               {items.map(([key, dim]) => {
@@ -388,7 +388,7 @@ function AddFilterMenu({
                     key={key}
                     onClick={() => { if (!isActive) { onAdd(key); setOpen(false); } }}
                     className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left transition-colors ${
-                      isActive ? 'text-[var(--color-text-muted)] bg-gray-50 cursor-default' : 'text-[var(--color-text-primary)] hover:bg-[var(--color-ep-purple)]/5 cursor-pointer'
+                      isActive ? 'text-[var(--color-text-muted)] bg-[var(--color-hover-bg)] cursor-default' : 'text-[var(--color-text-primary)] hover:bg-[var(--color-ep-purple)]/5 cursor-pointer'
                     }`}
                   >
                     {isActive ? (
@@ -694,7 +694,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
                 className={`px-3 py-1.5 text-xs rounded-md transition-all cursor-pointer ${
                   dataSource === src
                     ? 'bg-[var(--color-ep-purple)] text-white font-medium shadow-sm'
-                    : 'bg-gray-100 text-[var(--color-text-secondary)] hover:bg-gray-200'
+                    : 'bg-[var(--color-hover-bg)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]'
                 }`}
               >
                 {METRIC_CONFIG[src].label}
@@ -854,7 +854,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
                 <ChevronDown size={12} />
               </button>
               {metricsExpanded && (
-                <div className="absolute top-full left-0 mt-1 bg-white rounded-lg border border-[var(--color-border)] shadow-lg z-50 min-w-[220px] py-1">
+                <div className="absolute top-full left-0 mt-1 bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] shadow-lg z-50 min-w-[220px] py-1">
                   <div className="flex items-center justify-between px-3 py-1.5 border-b border-[var(--color-border)]">
                     <button onClick={() => setSelectedMetrics(config.metrics.map(m => m.key))} className="text-[10px] text-[var(--color-ep-blue)] hover:underline cursor-pointer">All</button>
                     <button onClick={() => setSelectedMetrics([])} className="text-[10px] text-[var(--color-text-muted)] hover:underline cursor-pointer">None</button>
@@ -863,7 +863,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
                     <button
                       key={m.key}
                       onClick={() => toggleMetric(m.key)}
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-gray-50 cursor-pointer"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-[var(--color-hover-bg)] cursor-pointer"
                     >
                       <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${
                         selectedMetrics.includes(m.key) ? 'bg-[var(--color-ep-purple)] border-[var(--color-ep-purple)]' : 'border-gray-300'
@@ -884,7 +884,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
                 <select
                   value={groupBy || ''}
                   onChange={(e) => setGroupBy(e.target.value || null)}
-                  className="text-xs border border-[var(--color-border)] rounded-md px-2 py-1.5 bg-white text-[var(--color-text-secondary)] cursor-pointer"
+                  className="text-xs border border-[var(--color-border)] rounded-md px-2 py-1.5 bg-[var(--color-card-bg)] text-[var(--color-text-secondary)] cursor-pointer"
                 >
                   <option value="">None</option>
                   {config.groupByOptions.map(opt => (
@@ -992,7 +992,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
               </thead>
               <tbody>
                 {processedData.map((row, i) => (
-                  <tr key={i} className="border-b border-[var(--color-border)] last:border-0 hover:bg-gray-50/50">
+                  <tr key={i} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-hover-bg)]">
                     <td className="px-4 py-3 font-medium text-[var(--color-ep-blue)]">
                       {(() => {
                         const nameVal = String(row[groupBy ? '_groupName' : config.nameKey] || '');
@@ -1011,7 +1011,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
                         return nameVal;
                       })()}
                       {row._count != null && groupBy && (
-                        <span className="ml-1.5 text-[10px] bg-gray-100 text-[var(--color-text-muted)] px-1.5 py-0.5 rounded-full">
+                        <span className="ml-1.5 text-[10px] bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] px-1.5 py-0.5 rounded-full">
                           {String(row._count)}
                         </span>
                       )}
@@ -1052,7 +1052,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
         {saveDialogOpen && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center">
             <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setSaveDialogOpen(false)} />
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-fadeInUp">
+            <div className="relative bg-[var(--color-card-bg)] rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-fadeInUp">
               <div className="px-5 pt-5 pb-2">
                 <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Save Report</h3>
                 <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Give your report a name for easy reference.</p>
@@ -1071,7 +1071,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
               <div className="flex items-center justify-end gap-2 px-5 pb-5">
                 <button
                   onClick={() => setSaveDialogOpen(false)}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-gray-50 cursor-pointer transition-colors"
+                  className="px-3 py-1.5 text-xs rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-hover-bg)] cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
@@ -1137,10 +1137,10 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
               onFocus={() => setCompareDropdownOpen(true)}
               placeholder={selectedMerchants.length >= 4 ? 'Maximum 4 merchants selected' : 'Search by name, industry, or state...'}
               disabled={selectedMerchants.length >= 4}
-              className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-[var(--color-border)] bg-white placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-ep-purple)]/30 focus:border-[var(--color-ep-purple)] disabled:opacity-50"
+              className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-ep-purple)]/30 focus:border-[var(--color-ep-purple)] disabled:opacity-50"
             />
             {compareDropdownOpen && compareResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg border border-[var(--color-border)] shadow-lg z-50 max-h-[240px] overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] shadow-lg z-50 max-h-[240px] overflow-y-auto">
                 {compareResults.map(m => (
                   <button
                     key={m.id}
@@ -1149,7 +1149,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
                       setCompareSearch('');
                       setCompareDropdownOpen(false);
                     }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-gray-50 cursor-pointer border-b border-[var(--color-border)] last:border-0"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-[var(--color-hover-bg)] cursor-pointer border-b border-[var(--color-border)] last:border-0"
                   >
                     <div>
                       <div className="text-sm font-medium text-[var(--color-text-primary)]">{m.name}</div>
@@ -1296,7 +1296,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
                 className="text-left bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-border)] p-4 hover:shadow-md hover:border-[var(--color-text-muted)] transition-all cursor-pointer group"
               >
                 <div className="flex items-start gap-3">
-                  <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-gray-100 transition-colors">
+                  <div className="p-2 bg-[var(--color-hover-bg)] rounded-lg group-hover:bg-[var(--color-border)] transition-colors">
                     {TEMPLATE_ICONS[tpl.icon] || <BarChart3 size={20} />}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1307,7 +1307,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
                       <span className="text-[10px] text-[var(--color-text-muted)]">
                         Last run {new Date(tpl.lastRun).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </span>
-                      <span className="text-[10px] bg-gray-100 text-[var(--color-text-muted)] px-1.5 py-0.5 rounded-full ml-auto">
+                      <span className="text-[10px] bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] px-1.5 py-0.5 rounded-full ml-auto">
                         {METRIC_CONFIG[tpl.dataSource]?.label || tpl.dataSource}
                       </span>
                     </div>

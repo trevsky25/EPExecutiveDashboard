@@ -17,7 +17,7 @@ export default function ChatButton({ onClick, isOpen, unreadCount }: Props) {
     <div className="fixed bottom-6 right-6 z-[9998]">
       <button
         onClick={onClick}
-        className="relative animate-finleyFadeIn bg-white rounded-xl shadow-lg border-2 border-emerald-400 px-3 py-1.5 flex items-center gap-2 cursor-pointer hover:shadow-xl hover:shadow-emerald-100 hover:scale-[1.02] active:scale-[0.98] transition-all"
+        className="relative animate-finleyFadeIn bg-[var(--color-card-bg)] rounded-xl shadow-lg border-2 border-emerald-400 px-3 py-1.5 flex items-center gap-2 cursor-pointer hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
         aria-label="Open Finley"
       >
         <Image src="/finley/finley-05.svg" alt="Finley" width={28} height={28} className="flex-shrink-0" />
