@@ -12,6 +12,9 @@ import {
   DollarSign,
   Headphones,
   FileBarChart,
+  Smartphone,
+  Globe,
+  Mail,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -34,7 +37,10 @@ const navItems: NavItem[] = [
   { id: 'credit-risk', label: 'Credit & Risk', icon: <ShieldCheck size={18} />, section: 'PORTFOLIO & RISK' },
   { id: 'collections', label: 'Collections', icon: <DollarSign size={18} />, section: 'PORTFOLIO & RISK' },
   { id: 'customer-care', label: 'Customer Care', icon: <Headphones size={18} />, section: 'OVERVIEW' },
-  { id: 'custom-reports', label: 'Custom Reports', icon: <FileBarChart size={18} />, section: 'ANALYTICS' },
+  { id: 'mobile-app', label: 'MyEasyPay Mobile', icon: <Smartphone size={18} />, section: 'ANALYTICS' },
+  { id: 'website-traffic', label: 'Website Traffic', icon: <Globe size={18} />, section: 'ANALYTICS' },
+  { id: 'outbound-marketing', label: 'Outbound Marketing', icon: <Mail size={18} />, section: 'ANALYTICS' },
+  { id: 'custom-reports', label: 'Custom Reports', icon: <FileBarChart size={18} />, section: 'SALES & GROWTH' },
 ];
 
 type SidebarProps = {
@@ -63,15 +69,31 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
         <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onMobileClose} />
       )}
       <aside
+        data-tour="sidebar"
         className={`fixed left-0 top-0 h-screen bg-[var(--color-sidebar)] text-white flex flex-col transition-all duration-300 z-50 ${mobileOpen ? 'translate-x-0' : 'max-md:-translate-x-full'}`}
         style={{ width: collapsed && !mobileOpen ? 64 : 240 }}
       >
-      {/* Logo */}
-      <div className="px-4 flex items-center border-b border-white/10" style={{ height: 60 }}>
+      {/* Logo + Collapse Toggle */}
+      <div className="px-4 flex items-center justify-between border-b border-white/10" style={{ height: 60 }}>
         {!collapsed ? (
-          <img src="/easypay-logo.svg" alt="EasyPay" className="h-10" />
+          <>
+            <img src="/easypay-logo.svg" alt="EasyPay" className="h-10" />
+            <button
+              onClick={onToggleCollapse}
+              className="p-1.5 rounded text-white/40 hover:text-white/70 hover:bg-white/10 transition-colors cursor-pointer"
+              title="Collapse sidebar"
+            >
+              <ChevronLeft size={16} />
+            </button>
+          </>
         ) : (
-          <img src="/easypay-e.svg" alt="EP" className="h-8 mx-auto" />
+          <button
+            onClick={onToggleCollapse}
+            className="mx-auto p-1.5 rounded text-white/40 hover:text-white/70 hover:bg-white/10 transition-colors cursor-pointer"
+            title="Expand sidebar"
+          >
+            <ChevronRight size={16} />
+          </button>
         )}
       </div>
 
@@ -125,20 +147,12 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
           </button>
         )}
 
-        {/* Collapse Toggle */}
-        <button
-          onClick={onToggleCollapse}
-          className="w-full p-3 text-white/40 hover:text-white/70 transition-colors flex items-center justify-center cursor-pointer"
-        >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
       </div>
 
       {/* Footer — Live time + date */}
       {!collapsed && (
-        <div className="px-4 py-3 text-[11px] text-white/30 border-t border-white/10">
-          <div>{now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase()}</div>
-          <div>Updated Live · {now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })}</div>
+        <div className="px-4 py-2.5 text-[11px] text-white/30 border-t border-white/10">
+          {now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase()} · {now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })}
         </div>
       )}
       </aside>

@@ -33,6 +33,9 @@ type KPICardProps = {
   detail?: KPIDetailData;
   target?: string;
   targetProgress?: number; // 0-100 percentage toward target
+  accentColorOverride?: string; // hex color to override status border-top
+  hasChart?: boolean; // remove bottom rounding when chart follows
+  largeValue?: boolean; // bigger number for expanded cards without charts
 };
 
 const TOOLTIP_WIDTH = 224; // w-56 = 14rem = 224px
@@ -90,6 +93,9 @@ export default function KPICard({
   detail,
   target,
   targetProgress,
+  accentColorOverride,
+  hasChart,
+  largeValue,
 }: KPICardProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -136,7 +142,8 @@ export default function KPICard({
     <>
       <div
         ref={cardRef}
-        className={`bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border)] border-t-[3px] ${statusColors[status]} p-4 flex flex-col gap-1 min-w-0 overflow-hidden cursor-pointer hover:shadow-md hover:border-[var(--color-text-muted)] transition-all`}
+        className={`bg-[var(--color-card-bg)] ${hasChart ? 'rounded-t-lg' : 'rounded-lg'} border border-[var(--color-border)] ${hasChart ? 'border-b-0' : ''} border-t-[3px] ${accentColorOverride ? '' : statusColors[status]} p-4 flex flex-col gap-1 min-w-0 overflow-hidden cursor-pointer hover:shadow-md transition-all flex-1`}
+        style={accentColorOverride ? { borderTopColor: accentColorOverride } : undefined}
         onClick={() => setShowModal(true)}
       >
         <div className="flex items-center gap-1.5">
@@ -156,7 +163,7 @@ export default function KPICard({
             </div>
           )}
         </div>
-        <div className="text-2xl font-bold tabular-nums text-[var(--color-text-primary)] tracking-tight truncate">
+        <div className={`${largeValue ? 'text-5xl' : 'text-2xl'} font-bold tabular-nums text-[var(--color-text-primary)] tracking-tight truncate`}>
           {displayValue}
         </div>
         <div className="flex items-center gap-1.5 mt-1 flex-wrap">

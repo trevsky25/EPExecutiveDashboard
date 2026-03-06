@@ -93,7 +93,7 @@ export default function InsightBanner({ tab }: InsightBannerProps) {
   const IconComp = ICON_MAP[insight.icon];
 
   return (
-    <div className={`mb-4 animate-slideDown`}>
+    <div data-tour="insight-banner" className={`mb-4 animate-slideDown`}>
       <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border-l-[3px] ${style.border} ${style.bg} transition-all`}>
         <div className={`flex-shrink-0 ${style.icon}`}>
           <IconComp size={16} />

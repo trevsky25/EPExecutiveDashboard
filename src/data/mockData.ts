@@ -978,6 +978,9 @@ export const reportTemplates = [
   { id: 'tpl-rep-leaderboard', name: 'Rep Leaderboard', description: 'Sales reps ranked by funded deals, volume, and activation rates.', icon: 'users', dataSource: 'reps' as const, filters: {} as Record<string, string[]>, metrics: ['merchants', 'fundedMTD', 'volumeMTD', 'enrollmentsMTD', 'activationRate'], sortBy: 'fundedMTD', sortDir: 'desc' as const, lastRun: '2026-03-02T11:00:00' },
   { id: 'tpl-industry', name: 'Industry Breakdown', description: 'Merchant performance grouped by industry vertical with averages.', icon: 'pieChart', dataSource: 'merchants' as const, filters: {} as Record<string, string[]>, metrics: ['volumeMTD', 'dealsMTD', 'approvalRate', 'delinquencyRate', 'fundingRate'], sortBy: 'volumeMTD', sortDir: 'desc' as const, groupBy: 'industry' as const, lastRun: '2026-02-27T13:20:00' },
   { id: 'tpl-enrollment', name: 'Enrollment Pipeline', description: 'Enrollment rep activity with funded volume, apps, and conversion metrics.', icon: 'rocket', dataSource: 'reps' as const, filters: {} as Record<string, string[]>, metrics: ['merchants', 'fundedMTD', 'volumeMTD', 'enrollmentsMTD', 'activationRate'], sortBy: 'enrollmentsMTD', sortDir: 'desc' as const, lastRun: '2026-03-01T10:30:00' },
+  { id: 'tpl-campaign-performance', name: 'Campaign Performance', description: 'All email campaigns ranked by open rate with engagement and revenue metrics.', icon: 'trophy', dataSource: 'campaigns' as const, filters: {} as Record<string, string[]>, metrics: ['sent', 'openRate', 'clickRate', 'revenue', 'unsubscribed'], sortBy: 'openRate', sortDir: 'desc' as const, lastRun: '2026-03-03T09:00:00' },
+  { id: 'tpl-top-pages', name: 'Top Pages by Traffic', description: 'Website pages ranked by views with bounce rate and conversion data.', icon: 'pieChart', dataSource: 'pages' as const, filters: {} as Record<string, string[]>, metrics: ['views', 'uniqueViews', 'bounceRate', 'convRate', 'avgTimeOnPage'], sortBy: 'views', sortDir: 'desc' as const, lastRun: '2026-03-02T15:00:00' },
+  { id: 'tpl-app-screens', name: 'App Screen Analytics', description: 'Mobile app screens ranked by usage with crash rates and user satisfaction.', icon: 'rocket', dataSource: 'screens' as const, filters: {} as Record<string, string[]>, metrics: ['views', 'sessions', 'avgDuration', 'crashRate', 'userRating'], sortBy: 'views', sortDir: 'desc' as const, lastRun: '2026-03-02T12:00:00' },
 ];
 
 export const savedReports = [
@@ -1111,4 +1114,251 @@ export const prevSaveVsRollTrend = [
   { month: 'Nov', saveRate: 62, rollRate: 15 },
   { month: 'Dec', saveRate: 55, rollRate: 18 },
   { month: 'Jan', saveRate: 50, rollRate: 20 },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// ── MyEasyPay Mobile App Data ──
+// ═══════════════════════════════════════════════════════════════
+
+export const mobileAppData = {
+  combined: {
+    totalDownloads: 184200,
+    totalDownloadsTrend: 12.4,
+    monthlyDownloads: 8420,
+    monthlyDownloadsTrend: 6.8,
+    dau: 28400,
+    dauTrend: 8.2,
+    mau: 94600,
+    mauTrend: 5.1,
+    retentionRate: 68,
+    retentionTrend: 2.3,
+    avgSessionDuration: '4m 32s',
+    avgSessionSeconds: 272,
+    sessionTrend: 3.1,
+    crashRate: 0.8,
+    crashTrend: -12,
+    pushOptIn: 72,
+    pushTrend: 1.8,
+    avgRating: 4.6,
+    ratingTrend: 0.1,
+    reviewCount: 3240,
+  },
+  ios: {
+    downloads: 112400,
+    downloadsTrend: 14.2,
+    dau: 18200,
+    mau: 61500,
+    avgRating: 4.7,
+    reviewCount: 1840,
+    crashRate: 0.6,
+    retentionRate: 71,
+    version: '3.2.1',
+  },
+  android: {
+    downloads: 71800,
+    downloadsTrend: 9.8,
+    dau: 10200,
+    mau: 33100,
+    avgRating: 4.4,
+    reviewCount: 1400,
+    crashRate: 1.1,
+    retentionRate: 63,
+    version: '3.2.0',
+  },
+};
+
+export const mobileDownloadsTrend = [
+  { month: 'Aug', ios: 5200, android: 3100, total: 8300 },
+  { month: 'Sep', ios: 5600, android: 3400, total: 9000 },
+  { month: 'Oct', ios: 6100, android: 3600, total: 9700 },
+  { month: 'Nov', ios: 5800, android: 3300, total: 9100 },
+  { month: 'Dec', ios: 6400, android: 3800, total: 10200 },
+  { month: 'Jan', ios: 5500, android: 2920, total: 8420 },
+];
+
+export const mobileDauTrend = [
+  { month: 'Aug', ios: 14800, android: 8200, total: 23000 },
+  { month: 'Sep', ios: 15400, android: 8600, total: 24000 },
+  { month: 'Oct', ios: 16100, android: 9000, total: 25100 },
+  { month: 'Nov', ios: 16800, android: 9400, total: 26200 },
+  { month: 'Dec', ios: 17500, android: 9800, total: 27300 },
+  { month: 'Jan', ios: 18200, android: 10200, total: 28400 },
+];
+
+export const mobilePlatformSplit = [
+  { name: 'iOS', value: 61, fill: '#3b82f6' },
+  { name: 'Android', value: 39, fill: '#10b981' },
+];
+
+export const mobileScreenViews = [
+  { screen: 'Dashboard', views: 42300 },
+  { screen: 'Payments', views: 38100 },
+  { screen: 'Account', views: 24600 },
+  { screen: 'Statements', views: 18200 },
+  { screen: 'Support', views: 12400 },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// ── Website Traffic Data ──
+// ═══════════════════════════════════════════════════════════════
+
+export const websiteTrafficData = {
+  sessions: 126400,
+  sessionsTrend: 9.2,
+  uniqueVisitors: 84200,
+  uniqueVisitorsTrend: 7.8,
+  pageViews: 412000,
+  pageViewsTrend: 11.3,
+  bounceRate: 38.4,
+  bounceRateTrend: -2.1,
+  avgSessionDuration: '3m 18s',
+  avgSessionSeconds: 198,
+  sessionDurationTrend: 4.6,
+  conversionRate: 3.2,
+  conversionTrend: 0.8,
+  goalCompletions: 4045,
+  goalTrend: 12.4,
+  pagesPerSession: 3.26,
+};
+
+export const websiteSessionsTrend = [
+  { month: 'Aug', sessions: 98200, visitors: 65400 },
+  { month: 'Sep', sessions: 104600, visitors: 70100 },
+  { month: 'Oct', sessions: 112400, visitors: 74800 },
+  { month: 'Nov', sessions: 108200, visitors: 72400 },
+  { month: 'Dec', sessions: 118600, visitors: 79200 },
+  { month: 'Jan', sessions: 126400, visitors: 84200 },
+];
+
+export const websiteTrafficSources = [
+  { name: 'Organic Search', value: 42, fill: '#10b981' },
+  { name: 'Direct', value: 24, fill: '#3b82f6' },
+  { name: 'Referral', value: 16, fill: '#f59e0b' },
+  { name: 'Paid Search', value: 12, fill: '#8b5cf6' },
+  { name: 'Social', value: 6, fill: '#ec4899' },
+];
+
+export const websiteDeviceBreakdown = [
+  { device: 'Desktop', sessions: 68, bounceRate: 32 },
+  { device: 'Mobile', sessions: 26, bounceRate: 48 },
+  { device: 'Tablet', sessions: 6, bounceRate: 36 },
+];
+
+export const websiteTopPages = [
+  { page: '/apply', views: 48200, convRate: 8.4 },
+  { page: '/login', views: 42100, convRate: 62.1 },
+  { page: '/products', views: 36400, convRate: 4.2 },
+  { page: '/about', views: 28600, convRate: 1.8 },
+  { page: '/support', views: 22400, convRate: 3.1 },
+];
+
+export const websiteBounceRateTrend = [
+  { month: 'Aug', bounceRate: 42.1, target: 35 },
+  { month: 'Sep', bounceRate: 41.2, target: 35 },
+  { month: 'Oct', bounceRate: 40.6, target: 35 },
+  { month: 'Nov', bounceRate: 39.8, target: 35 },
+  { month: 'Dec', bounceRate: 39.2, target: 35 },
+  { month: 'Jan', bounceRate: 38.4, target: 35 },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// ── Outbound Marketing Data (Mailchimp) ──
+// ═══════════════════════════════════════════════════════════════
+
+export const outboundMarketingData = {
+  totalCampaigns: 24,
+  campaignsTrend: 4,
+  emailsSent: 186400,
+  emailsSentTrend: 8.6,
+  avgOpenRate: 34.2,
+  openRateTrend: 2.4,
+  avgClickRate: 4.8,
+  clickRateTrend: 0.6,
+  unsubscribeRate: 0.3,
+  unsubscribeTrend: -0.1,
+  bounceRate: 1.2,
+  bounceTrend: -0.2,
+  listSize: 42800,
+  listGrowthRate: 3.4,
+  revenueAttributed: 284000,
+  revenueTrend: 14.2,
+};
+
+export const marketingCampaigns = [
+  { name: 'January Newsletter', sent: 42800, opened: 15408, clicked: 2140, date: 'Jan 15', status: 'sent' as const, openRate: 36.0, clickRate: 5.0 },
+  { name: 'New Year Promo', sent: 42800, opened: 17120, clicked: 3424, date: 'Jan 2', status: 'sent' as const, openRate: 40.0, clickRate: 8.0 },
+  { name: 'Holiday Special', sent: 41200, opened: 14420, clicked: 2060, date: 'Dec 18', status: 'sent' as const, openRate: 35.0, clickRate: 5.0 },
+  { name: 'Product Update', sent: 42000, opened: 13440, clicked: 1680, date: 'Dec 5', status: 'sent' as const, openRate: 32.0, clickRate: 4.0 },
+  { name: 'Black Friday', sent: 41800, opened: 18810, clicked: 4180, date: 'Nov 24', status: 'sent' as const, openRate: 45.0, clickRate: 10.0 },
+  { name: 'Nov Newsletter', sent: 40600, opened: 13398, clicked: 1624, date: 'Nov 12', status: 'sent' as const, openRate: 33.0, clickRate: 4.0 },
+];
+
+export const marketingOpenClickTrend = [
+  { month: 'Aug', openRate: 30.2, clickRate: 3.8 },
+  { month: 'Sep', openRate: 31.4, clickRate: 4.0 },
+  { month: 'Oct', openRate: 32.8, clickRate: 4.2 },
+  { month: 'Nov', openRate: 33.6, clickRate: 4.5 },
+  { month: 'Dec', openRate: 33.8, clickRate: 4.6 },
+  { month: 'Jan', openRate: 34.2, clickRate: 4.8 },
+];
+
+export const marketingListGrowth = [
+  { month: 'Aug', subscribers: 38200, newSubs: 1400, unsubscribed: 180 },
+  { month: 'Sep', subscribers: 39400, newSubs: 1380, unsubscribed: 160 },
+  { month: 'Oct', subscribers: 40500, newSubs: 1320, unsubscribed: 200 },
+  { month: 'Nov', subscribers: 41400, newSubs: 1120, unsubscribed: 220 },
+  { month: 'Dec', subscribers: 42100, newSubs: 940, unsubscribed: 240 },
+  { month: 'Jan', subscribers: 42800, newSubs: 960, unsubscribed: 260 },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// ── Custom Reports — Expanded Record-Level Data ──
+// ═══════════════════════════════════════════════════════════════
+
+// ── Email Campaigns (expanded for Custom Reports) ──
+export const campaignRecords = [
+  { name: 'January Newsletter', type: 'Newsletter', audience: 'All Subscribers', sent: 42800, opened: 15408, clicked: 2140, bounced: 514, unsubscribed: 86, openRate: 36.0, clickRate: 5.0, bounceRate: 1.2, revenue: 18200, date: '2026-01-15', month: 'Jan', status: 'sent' },
+  { name: 'New Year Promo', type: 'Promotional', audience: 'Active Customers', sent: 42800, opened: 17120, clicked: 3424, bounced: 428, unsubscribed: 64, openRate: 40.0, clickRate: 8.0, bounceRate: 1.0, revenue: 42600, date: '2026-01-02', month: 'Jan', status: 'sent' },
+  { name: 'Holiday Special', type: 'Promotional', audience: 'All Subscribers', sent: 41200, opened: 14420, clicked: 2060, bounced: 618, unsubscribed: 102, openRate: 35.0, clickRate: 5.0, bounceRate: 1.5, revenue: 36800, date: '2025-12-18', month: 'Dec', status: 'sent' },
+  { name: 'Product Update', type: 'Newsletter', audience: 'Active Customers', sent: 42000, opened: 13440, clicked: 1680, bounced: 504, unsubscribed: 84, openRate: 32.0, clickRate: 4.0, bounceRate: 1.2, revenue: 8400, date: '2025-12-05', month: 'Dec', status: 'sent' },
+  { name: 'Black Friday', type: 'Promotional', audience: 'All Subscribers', sent: 41800, opened: 18810, clicked: 4180, bounced: 376, unsubscribed: 42, openRate: 45.0, clickRate: 10.0, bounceRate: 0.9, revenue: 68400, date: '2025-11-24', month: 'Nov', status: 'sent' },
+  { name: 'Nov Newsletter', type: 'Newsletter', audience: 'All Subscribers', sent: 40600, opened: 13398, clicked: 1624, bounced: 528, unsubscribed: 98, openRate: 33.0, clickRate: 4.0, bounceRate: 1.3, revenue: 6200, date: '2025-11-12', month: 'Nov', status: 'sent' },
+  { name: 'Fall Savings', type: 'Promotional', audience: 'Lapsed Customers', sent: 18400, opened: 5520, clicked: 920, bounced: 276, unsubscribed: 128, openRate: 30.0, clickRate: 5.0, bounceRate: 1.5, revenue: 14800, date: '2025-10-28', month: 'Oct', status: 'sent' },
+  { name: 'Oct Newsletter', type: 'Newsletter', audience: 'All Subscribers', sent: 39800, opened: 13134, clicked: 1592, bounced: 478, unsubscribed: 80, openRate: 33.0, clickRate: 4.0, bounceRate: 1.2, revenue: 5800, date: '2025-10-15', month: 'Oct', status: 'sent' },
+  { name: 'AutoPay Reminder', type: 'Transactional', audience: 'Non-AutoPay', sent: 12400, opened: 6200, clicked: 1860, bounced: 124, unsubscribed: 12, openRate: 50.0, clickRate: 15.0, bounceRate: 1.0, revenue: 0, date: '2025-10-10', month: 'Oct', status: 'sent' },
+  { name: 'Sep Newsletter', type: 'Newsletter', audience: 'All Subscribers', sent: 39200, opened: 12544, clicked: 1568, bounced: 470, unsubscribed: 72, openRate: 32.0, clickRate: 4.0, bounceRate: 1.2, revenue: 5400, date: '2025-09-15', month: 'Sep', status: 'sent' },
+  { name: 'Back to School', type: 'Promotional', audience: 'Active Customers', sent: 38600, opened: 13510, clicked: 2316, bounced: 386, unsubscribed: 58, openRate: 35.0, clickRate: 6.0, bounceRate: 1.0, revenue: 28200, date: '2025-09-05', month: 'Sep', status: 'sent' },
+  { name: 'Payment Due Reminder', type: 'Transactional', audience: 'Past Due', sent: 8200, opened: 4920, clicked: 2460, bounced: 82, unsubscribed: 4, openRate: 60.0, clickRate: 30.0, bounceRate: 1.0, revenue: 0, date: '2025-08-28', month: 'Aug', status: 'sent' },
+];
+
+// ── Website Pages (expanded for Custom Reports) ──
+export const websitePageRecords = [
+  { page: '/apply', section: 'Conversion', views: 48200, uniqueViews: 38400, bounceRate: 22.4, avgTimeOnPage: 185, convRate: 8.4, device: 'All', source: 'Organic' },
+  { page: '/login', section: 'Account', views: 42100, uniqueViews: 36800, bounceRate: 12.1, avgTimeOnPage: 42, convRate: 62.1, device: 'All', source: 'Direct' },
+  { page: '/products', section: 'Marketing', views: 36400, uniqueViews: 28600, bounceRate: 34.2, avgTimeOnPage: 124, convRate: 4.2, device: 'All', source: 'Organic' },
+  { page: '/about', section: 'Marketing', views: 28600, uniqueViews: 24200, bounceRate: 48.6, avgTimeOnPage: 96, convRate: 1.8, device: 'All', source: 'Organic' },
+  { page: '/support', section: 'Service', views: 22400, uniqueViews: 18200, bounceRate: 28.4, avgTimeOnPage: 210, convRate: 3.1, device: 'All', source: 'Direct' },
+  { page: '/faq', section: 'Service', views: 18600, uniqueViews: 15400, bounceRate: 42.8, avgTimeOnPage: 148, convRate: 1.2, device: 'All', source: 'Organic' },
+  { page: '/payments', section: 'Account', views: 16200, uniqueViews: 14800, bounceRate: 15.2, avgTimeOnPage: 62, convRate: 48.2, device: 'All', source: 'Direct' },
+  { page: '/account/settings', section: 'Account', views: 12400, uniqueViews: 11200, bounceRate: 18.6, avgTimeOnPage: 88, convRate: 22.4, device: 'All', source: 'Direct' },
+  { page: '/blog', section: 'Marketing', views: 11800, uniqueViews: 9400, bounceRate: 56.2, avgTimeOnPage: 182, convRate: 0.8, device: 'All', source: 'Social' },
+  { page: '/contact', section: 'Service', views: 9600, uniqueViews: 8200, bounceRate: 32.4, avgTimeOnPage: 74, convRate: 12.6, device: 'All', source: 'Organic' },
+  { page: '/merchants', section: 'Marketing', views: 8400, uniqueViews: 7200, bounceRate: 38.4, avgTimeOnPage: 108, convRate: 3.8, device: 'All', source: 'Paid' },
+  { page: '/rates', section: 'Marketing', views: 7200, uniqueViews: 6400, bounceRate: 30.2, avgTimeOnPage: 142, convRate: 5.6, device: 'All', source: 'Organic' },
+];
+
+// ── Mobile App Screens (expanded for Custom Reports) ──
+export const mobileScreenRecords = [
+  { screen: 'Dashboard', platform: 'Both', views: 42300, sessions: 38200, avgDuration: 45, crashRate: 0.02, userRating: 4.7, category: 'Core' },
+  { screen: 'Payments', platform: 'Both', views: 38100, sessions: 34800, avgDuration: 62, crashRate: 0.04, userRating: 4.5, category: 'Core' },
+  { screen: 'Account', platform: 'Both', views: 24600, sessions: 22100, avgDuration: 38, crashRate: 0.01, userRating: 4.6, category: 'Core' },
+  { screen: 'Statements', platform: 'Both', views: 18200, sessions: 16400, avgDuration: 84, crashRate: 0.03, userRating: 4.4, category: 'Financial' },
+  { screen: 'Support', platform: 'Both', views: 12400, sessions: 11200, avgDuration: 120, crashRate: 0.05, userRating: 4.2, category: 'Service' },
+  { screen: 'AutoPay Setup', platform: 'Both', views: 9800, sessions: 8600, avgDuration: 95, crashRate: 0.06, userRating: 4.3, category: 'Financial' },
+  { screen: 'Notifications', platform: 'Both', views: 8400, sessions: 7800, avgDuration: 22, crashRate: 0.01, userRating: 4.5, category: 'Core' },
+  { screen: 'Profile', platform: 'Both', views: 7200, sessions: 6400, avgDuration: 48, crashRate: 0.02, userRating: 4.6, category: 'Core' },
+  { screen: 'Documents', platform: 'Both', views: 5600, sessions: 4800, avgDuration: 72, crashRate: 0.08, userRating: 4.1, category: 'Financial' },
+  { screen: 'Chat Support', platform: 'Both', views: 4200, sessions: 3800, avgDuration: 180, crashRate: 0.12, userRating: 3.9, category: 'Service' },
+  { screen: 'Calculator', platform: 'iOS', views: 3400, sessions: 2800, avgDuration: 56, crashRate: 0.02, userRating: 4.8, category: 'Tools' },
+  { screen: 'Referrals', platform: 'Both', views: 2800, sessions: 2400, avgDuration: 34, crashRate: 0.03, userRating: 4.4, category: 'Growth' },
 ];

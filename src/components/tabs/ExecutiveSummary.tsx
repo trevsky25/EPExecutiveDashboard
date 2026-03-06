@@ -6,6 +6,7 @@ import InsightBanner from '../InsightBanner';
 import ChartCard from '../ChartCard';
 import ComparisonToggle from '../ComparisonToggle';
 import AnnotationDot from '../AnnotationDot';
+import HelpButton from '../HelpButton';
 import {
   executiveSummary,
   saveRateTrend,
@@ -54,12 +55,13 @@ export default function ExecutiveSummary({ dateRange }: { dateRange?: DateRange 
         <span className="text-xs uppercase tracking-widest font-semibold text-[var(--color-ep-green)]">
           Combined Portfolio
         </span>
+        <HelpButton tourId="executive-summary" />
       </div>
 
       <InsightBanner tab="executive-summary" />
 
       {/* Top KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
+      <div data-tour="kpi-cards" className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
         <KPICard title="Active Accounts" value={d.combined.activeAccounts.toLocaleString()} trend={d.combined.activeAccountsTrend} trendLabel="MoM" status="green" tooltip="Total number of accounts with an outstanding balance across both Finance (RIC) and LTO portfolios." detail={kpiDetails.activeAccounts} target="50,000" targetProgress={(d.combined.activeAccounts / 50000) * 100} />
         <KPICard title="Current (0 DPD)" value={d.combined.current0DPD.toLocaleString()} subtitle={`${d.combined.current0DPDPct}%`} status="green" tooltip="Accounts with zero days past due — fully current on payments. Higher is better." detail={kpiDetails.current0DPD} target="85%" targetProgress={(d.combined.current0DPDPct / 85) * 100} />
         <KPICard title="At-Risk (31-60)" value={d.combined.atRisk31_60.toLocaleString()} trend={d.combined.atRisk31_60Trend} subtitle={`$${d.combined.atRisk31_60Exposure}M exposure`} status="orange" tooltip="Accounts 31–60 days past due. These are at risk of defaulting if not cured. Exposure = total outstanding balance." detail={kpiDetails.atRisk31_60} />
@@ -72,7 +74,7 @@ export default function ExecutiveSummary({ dateRange }: { dateRange?: DateRange 
       </div>
 
       {/* Finance vs LTO Side by Side */}
-      <div className="flex items-center gap-2 mb-4 mt-8">
+      <div data-tour="es-comparison" className="flex items-center gap-2 mb-4 mt-8">
         <div className="w-1 h-5 bg-[var(--color-ep-orange)] rounded-full" />
         <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">Finance (RIC) vs LTO — Side by Side</h2>
       </div>
@@ -108,7 +110,7 @@ export default function ExecutiveSummary({ dateRange }: { dateRange?: DateRange 
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div data-tour="es-charts" className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <ChartCard title="Save Rate — Finance vs LTO" badge="Declining" badgeColor="red" headerRight={<ComparisonToggle enabled={showSaveRateComparison} onToggle={setShowSaveRateComparison} />}>
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={saveRateData}>

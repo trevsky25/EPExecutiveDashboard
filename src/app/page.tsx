@@ -17,17 +17,22 @@ import Sales from '@/components/tabs/Sales';
 import CustomReports from '@/components/tabs/CustomReports';
 import MerchantServices from '@/components/tabs/MerchantServices';
 import MyDashboard from '@/components/tabs/MyDashboard';
+import MobileApp from '@/components/tabs/MobileApp';
+import WebsiteTraffic from '@/components/tabs/WebsiteTraffic';
+import OutboundMarketing from '@/components/tabs/OutboundMarketing';
 import ChatButton from '@/components/chat/ChatButton';
 import ChatPanel from '@/components/chat/ChatPanel';
 import SavedReportsPanel from '@/components/SavedReportsPanel';
 import ActivityFeed from '@/components/ActivityFeed';
 import type { SavedReport, ChatResponseData } from '@/lib/chat/chatTypes';
-import { Circle, Search, ChevronDown, LogOut, FileText, Bell, Menu } from 'lucide-react';
+import { Circle, Search, ChevronDown, LogOut, FileText, Bell, Menu, GraduationCap } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import AlertBell from '@/components/AlertBell';
 import NotificationPrefsModal from '@/components/NotificationPrefsModal';
+import TourOverlay from '@/components/TourOverlay';
 import PresentationBar from '@/components/PresentationBar';
 import { useTheme } from '@/lib/ThemeContext';
+import { useOnboarding } from '@/lib/OnboardingContext';
 import ExportButton from '@/components/ExportButton';
 import { downloadCSV } from '@/lib/exportCSV';
 import { downloadPDF } from '@/lib/exportPDF';
@@ -50,6 +55,9 @@ const tabTitles: Record<string, string> = {
   'portfolio-health': 'Portfolio Health',
   'credit-risk': 'Credit & Risk',
   'collections': 'Collections',
+  'mobile-app': 'MyEasyPay Mobile',
+  'website-traffic': 'Website Traffic',
+  'outbound-marketing': 'Outbound Marketing',
   'custom-reports': 'Custom Reports',
 };
 
@@ -72,6 +80,7 @@ function parseUserFromEmail(email: string): UserInfo {
 
 export default function Dashboard() {
   const { presentationMode, togglePresentation } = useTheme();
+  const { startTour } = useOnboarding();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [activeTab, setActiveTab] = useState('executive-summary');
@@ -248,6 +257,12 @@ export default function Dashboard() {
         return <CustomReports dateRange={dateRange} onSaveReport={handleSaveCustomReport} />;
       case 'merchant-services':
         return <MerchantServices dateRange={dateRange} />;
+      case 'mobile-app':
+        return <MobileApp dateRange={dateRange} />;
+      case 'website-traffic':
+        return <WebsiteTraffic dateRange={dateRange} />;
+      case 'outbound-marketing':
+        return <OutboundMarketing dateRange={dateRange} />;
       default:
         return <ExecutiveSummary dateRange={dateRange} />;
     }
@@ -305,6 +320,7 @@ export default function Dashboard() {
 
             {/* Search — grows to fill space */}
             <button
+              data-tour="search"
               onClick={() => setSearchOpen(true)}
               className="flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--color-text-muted)] bg-[var(--color-hover-bg)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-text-muted)] transition-colors cursor-pointer ml-auto max-w-[220px]"
             >
@@ -316,16 +332,16 @@ export default function Dashboard() {
             </button>
 
             <div className="hidden sm:contents">
-              <DateRangeFilter value={dateRange} onChange={setDateRange} />
-              <ExportButton onExport={handleExport} />
+              <div data-tour="date-filter"><DateRangeFilter value={dateRange} onChange={setDateRange} /></div>
+              <div data-tour="export"><ExportButton onExport={handleExport} /></div>
               <ActivityFeed onNavigateTab={setActiveTab} />
             </div>
-            <AlertBell onNavigateTab={setActiveTab} />
+            <div data-tour="alert-bell"><AlertBell onNavigateTab={setActiveTab} /></div>
             <ThemeToggle />
 
             {/* Profile */}
             {user && (
-              <div className="relative">
+              <div className="relative" data-tour="profile-menu">
                 <button
                   onClick={() => setProfileMenuOpen(prev => !prev)}
                   className="flex items-center gap-2 pl-1 pr-1 py-1 rounded-lg hover:bg-[var(--color-hover-bg)] transition-all cursor-pointer"
@@ -370,6 +386,13 @@ export default function Dashboard() {
                         >
                           <Bell size={15} className="text-[var(--color-text-muted)]" />
                           Notification Preferences
+                        </button>
+                        <button
+                          onClick={() => { startTour('main'); setProfileMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-hover-bg)] transition-colors cursor-pointer"
+                        >
+                          <GraduationCap size={15} className="text-[var(--color-text-muted)]" />
+                          Take a Tour
                         </button>
                         <div className="h-px bg-[var(--color-border)] mx-3 my-1" />
                         <button
@@ -454,6 +477,9 @@ export default function Dashboard() {
 
       {/* Notification Preferences */}
       <NotificationPrefsModal open={notifPrefsOpen} onClose={() => setNotifPrefsOpen(false)} />
+
+      {/* Onboarding Tour */}
+      <TourOverlay />
 
     </div>
   );

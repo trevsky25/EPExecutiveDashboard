@@ -20,6 +20,9 @@ const TAB_ORDER = [
   'credit-risk',
   'sales',
   'merchant-services',
+  'mobile-app',
+  'website-traffic',
+  'outbound-marketing',
 ];
 
 export default function KPIPinSelector({ open, onClose }: KPIPinSelectorProps) {

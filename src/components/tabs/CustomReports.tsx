@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import SubTabFilter from '../SubTabFilter';
 import ChartCard from '../ChartCard';
+import HelpButton from '../HelpButton';
 import ConditionalCell from '../ConditionalCell';
 import Sparkline from '../Sparkline';
 import BranchProfilePanel from '../BranchProfilePanel';
@@ -12,6 +13,7 @@ import {
   repScorecard, territoryPerformance,
   reportTemplates, savedReports,
   branchDetails, type BranchDetail,
+  campaignRecords, websitePageRecords, mobileScreenRecords,
 } from '@/data/mockData';
 import { downloadCSV } from '@/lib/exportCSV';
 import {
@@ -29,7 +31,7 @@ import type { DateRange } from '@/lib/dateFilter';
 import type { ChatResponseData } from '@/lib/chat/chatTypes';
 
 // ── Types ──
-type DataSource = 'merchants' | 'reps' | 'territories';
+type DataSource = 'merchants' | 'reps' | 'territories' | 'campaigns' | 'pages' | 'screens';
 type SortDir = 'asc' | 'desc';
 type DimensionType = 'multiselect' | 'dateRange' | 'numericRange' | 'select';
 
@@ -137,6 +139,69 @@ const METRIC_CONFIG: Record<DataSource, SourceConfig> = {
     groupByOptions: [],
     nameKey: 'territory',
     getData: () => territoryPerformance as unknown as Record<string, unknown>[],
+  },
+  campaigns: {
+    label: 'Email Campaigns',
+    metrics: [
+      { key: 'sent', label: 'Sent', format: (v) => v.toLocaleString() },
+      { key: 'opened', label: 'Opened', format: (v) => v.toLocaleString() },
+      { key: 'clicked', label: 'Clicked', format: (v) => v.toLocaleString() },
+      { key: 'openRate', label: 'Open Rate %', format: (v) => `${v}%` },
+      { key: 'clickRate', label: 'Click Rate %', format: (v) => `${v}%` },
+      { key: 'bounceRate', label: 'Bounce Rate %', format: (v) => `${v}%`, invert: true },
+      { key: 'unsubscribed', label: 'Unsubscribed', format: (v) => v.toLocaleString(), invert: true },
+      { key: 'revenue', label: 'Revenue', format: (v) => `$${(v / 1000).toFixed(1)}K` },
+    ],
+    dimensions: {
+      type: { label: 'Campaign Type', values: () => [...new Set(campaignRecords.map(c => c.type))].sort() },
+      audience: { label: 'Audience', values: () => [...new Set(campaignRecords.map(c => c.audience))].sort() },
+      month: { label: 'Month', values: () => [...new Set(campaignRecords.map(c => c.month))] },
+      openRate: { label: 'Open Rate', type: 'numericRange', suffix: '%', step: 1 },
+      clickRate: { label: 'Click Rate', type: 'numericRange', suffix: '%', step: 0.5 },
+      revenue: { label: 'Revenue', type: 'numericRange', prefix: '$', step: 1000 },
+    },
+    groupByOptions: ['type', 'audience', 'month'],
+    nameKey: 'name',
+    getData: () => campaignRecords as unknown as Record<string, unknown>[],
+  },
+  pages: {
+    label: 'Website Pages',
+    metrics: [
+      { key: 'views', label: 'Views', format: (v) => v.toLocaleString() },
+      { key: 'uniqueViews', label: 'Unique Views', format: (v) => v.toLocaleString() },
+      { key: 'bounceRate', label: 'Bounce Rate %', format: (v) => `${v}%`, invert: true },
+      { key: 'avgTimeOnPage', label: 'Avg Time (s)', format: (v) => `${v}s` },
+      { key: 'convRate', label: 'Conv Rate %', format: (v) => `${v}%` },
+    ],
+    dimensions: {
+      section: { label: 'Section', values: () => [...new Set(websitePageRecords.map(p => p.section))].sort() },
+      source: { label: 'Traffic Source', values: () => [...new Set(websitePageRecords.map(p => p.source))].sort() },
+      bounceRate: { label: 'Bounce Rate', type: 'numericRange', suffix: '%', step: 5 },
+      convRate: { label: 'Conversion Rate', type: 'numericRange', suffix: '%', step: 1 },
+      views: { label: 'Page Views', type: 'numericRange', step: 1000 },
+    },
+    groupByOptions: ['section', 'source'],
+    nameKey: 'page',
+    getData: () => websitePageRecords as unknown as Record<string, unknown>[],
+  },
+  screens: {
+    label: 'App Screens',
+    metrics: [
+      { key: 'views', label: 'Views', format: (v) => v.toLocaleString() },
+      { key: 'sessions', label: 'Sessions', format: (v) => v.toLocaleString() },
+      { key: 'avgDuration', label: 'Avg Duration (s)', format: (v) => `${v}s` },
+      { key: 'crashRate', label: 'Crash Rate %', format: (v) => `${v}%`, invert: true },
+      { key: 'userRating', label: 'User Rating', format: (v) => v.toFixed(1) },
+    ],
+    dimensions: {
+      platform: { label: 'Platform', values: () => ['Both', 'iOS', 'Android'] },
+      category: { label: 'Category', values: () => [...new Set(mobileScreenRecords.map(s => s.category))].sort() },
+      crashRate: { label: 'Crash Rate', type: 'numericRange', suffix: '%', step: 0.01 },
+      userRating: { label: 'User Rating', type: 'numericRange', step: 0.1 },
+    },
+    groupByOptions: ['platform', 'category'],
+    nameKey: 'screen',
+    getData: () => mobileScreenRecords as unknown as Record<string, unknown>[],
   },
 };
 
@@ -685,9 +750,9 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
         {/* Controls */}
         <div className="bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-border)] p-4 space-y-3">
           {/* Row 1: Data Source */}
-          <div className="flex items-center gap-3 flex-wrap">
+          <div data-tour="cr-datasource" className="flex items-center gap-3 flex-wrap">
             <span className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Data Source</span>
-            {(['merchants', 'reps', 'territories'] as DataSource[]).map(src => (
+            {(['merchants', 'reps', 'territories', 'campaigns', 'pages', 'screens'] as DataSource[]).map(src => (
               <button
                 key={src}
                 onClick={() => setDataSource(src)}
@@ -724,7 +789,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
             return (
               <>
                 {/* Add Filter button + Clear All */}
-                <div className="flex items-center gap-2">
+                <div data-tour="cr-filters" className="flex items-center gap-2">
                   <AddFilterMenu
                     dimensions={config.dimensions}
                     activeKeys={activeFilterKeys}
@@ -844,7 +909,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
           {/* Row 3: Metrics, Group By, Chart toggle */}
           <div className="flex items-center gap-3 flex-wrap">
             {/* Metric selector */}
-            <div className="relative">
+            <div data-tour="cr-metrics" className="relative">
               <button
                 onClick={() => setMetricsExpanded(!metricsExpanded)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-muted)] cursor-pointer"
@@ -909,26 +974,28 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
 
             <div className="flex-1" />
 
-            {/* Save Report */}
-            {onSaveReport && (
-              <button
-                onClick={openSaveDialog}
-                disabled={processedData.length === 0}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 cursor-pointer disabled:opacity-40 disabled:cursor-default transition-colors"
-              >
-                <Bookmark size={12} />
-                Save Report
-              </button>
-            )}
+            <div data-tour="cr-export" className="flex items-center gap-2">
+              {/* Save Report */}
+              {onSaveReport && (
+                <button
+                  onClick={openSaveDialog}
+                  disabled={processedData.length === 0}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 cursor-pointer disabled:opacity-40 disabled:cursor-default transition-colors"
+                >
+                  <Bookmark size={12} />
+                  Save Report
+                </button>
+              )}
 
-            {/* Export */}
-            <button
-              onClick={exportReport}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-muted)] cursor-pointer"
-            >
-              <Download size={12} />
-              Export CSV
-            </button>
+              {/* Export */}
+              <button
+                onClick={exportReport}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-muted)] cursor-pointer"
+              >
+                <Download size={12} />
+                Export CSV
+              </button>
+            </div>
           </div>
         </div>
 
@@ -960,7 +1027,7 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
 
         {/* Results Table */}
         {processedData.length > 0 ? (
-          <div className="bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-border)] overflow-x-auto">
+          <div data-tour="cr-table" className="bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-border)] overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--color-border)]">
@@ -1353,9 +1420,12 @@ export default function CustomReports({ dateRange, onSaveReport }: { dateRange?:
         <span className="text-xs uppercase tracking-widest font-semibold text-[var(--color-ep-purple)]">
           Custom Reports
         </span>
+        <HelpButton tourId="custom-reports" />
       </div>
 
-      <SubTabFilter tabs={SUB_TABS} activeTab={activeSubTab} onTabChange={setActiveSubTab} />
+      <div data-tour="cr-subtabs">
+        <SubTabFilter tabs={SUB_TABS} activeTab={activeSubTab} onTabChange={setActiveSubTab} />
+      </div>
 
       {activeSubTab === 'Report Builder' && renderReportBuilder()}
       {activeSubTab === 'Compare' && renderCompare()}
