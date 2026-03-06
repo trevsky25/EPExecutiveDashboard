@@ -69,30 +69,31 @@ export default function SortableKPICard({
           : ''
       }`}
     >
+      {/* Tab label pill — always visible, color matches card accent */}
+      <div className="absolute -top-3 left-2 z-10">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigateTab?.(kpi.tab);
+          }}
+          className="text-[9px] font-medium px-1.5 py-0.5 rounded cursor-pointer transition-colors shadow-sm bg-[var(--color-card-bg)]"
+          style={{
+            color: chartColor,
+            border: `1px solid ${chartColor}40`,
+          }}
+        >
+          {kpi.tabLabel}
+        </button>
+      </div>
+
       {/* Edit mode: settings + unpin overlays */}
       {isEditMode && (
-        <>
-          {/* Settings + Unpin */}
-          <div className="absolute top-2 right-2 z-10 flex items-center gap-0.5">
-            <CustomizeButton kpiId={kpi.id} />
-            <div data-tour="md-remove">
-              <PinButton kpiId={kpi.id} />
-            </div>
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-0.5">
+          <CustomizeButton kpiId={kpi.id} />
+          <div data-tour="md-remove">
+            <PinButton kpiId={kpi.id} />
           </div>
-
-          {/* Tab label — positioned above the title row to avoid overlap */}
-          <div className="absolute -top-3 left-2 z-10">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onNavigateTab?.(kpi.tab);
-              }}
-              className="text-[9px] font-medium bg-[var(--color-hover-bg)] text-[var(--color-text-muted)] px-1.5 py-0.5 rounded border border-[var(--color-border)] hover:text-[var(--color-ep-blue)] cursor-pointer transition-colors shadow-sm"
-            >
-              {kpi.tabLabel}
-            </button>
-          </div>
-        </>
+        </div>
       )}
 
       {/* Card content */}

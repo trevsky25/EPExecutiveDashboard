@@ -117,25 +117,54 @@ export const executiveSummaryTourSteps: Step[] = [
   },
 ];
 
-// ── My Dashboard Tour ──
-export const myDashboardTourSteps: Step[] = [
+// ── My Dashboard Tour (Empty State) ──
+export const myDashboardEmptySteps: Step[] = [
+  {
+    target: '[data-tour="md-empty"]',
+    title: 'Welcome to My Dashboard',
+    content: 'This is your personal command center. Pin the KPIs and reports that matter most to you — everything updates in real-time.',
+    placement: 'bottom',
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="md-browse"]',
+    title: 'Browse KPIs',
+    content: 'Start here — browse metrics from every department including Sales, Collections, Credit Risk, Analytics, and more.',
+    placement: 'top',
+  },
+  {
+    target: '[data-tour="md-add-reports-empty"]',
+    title: 'Pin Saved Reports',
+    content: 'Add reports you\'ve saved from Custom Reports. They\'ll appear right on your dashboard for quick reference.',
+    placement: 'top',
+  },
+];
+
+// ── My Dashboard Tour (Populated State) ──
+export const myDashboardPopulatedSteps: Step[] = [
   {
     target: '[data-tour="md-pinned"]',
     title: 'Your Pinned KPIs',
-    content: 'This is your personalized view. Pin the metrics that matter most to you for quick daily access.',
+    content: 'These are your personalized metrics. Each card shows live data with trends. Click any card for a detailed breakdown.',
     placement: 'bottom',
     disableBeacon: true,
   },
   {
     target: '[data-tour="md-add"]',
     title: 'Add More KPIs',
-    content: 'Click "Add KPIs" to browse metrics from every department — Sales, Collections, Credit Risk, and more.',
+    content: 'Browse metrics from every department — Sales, Collections, Credit Risk, Analytics, and more. Pin as many as you need.',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="md-edit"]',
+    title: 'Edit Your Layout',
+    content: 'Enter Edit mode to drag-and-drop cards into your preferred order, resize cards, customize colors and chart styles, or unpin tiles.',
     placement: 'bottom',
   },
   {
     target: '[data-tour="md-remove"]',
     title: 'Remove a KPI',
-    content: 'Click the pin icon on any card to unpin it from your dashboard. You can always re-add it later.',
+    content: 'In Edit mode, click the pin icon on any card to unpin it. You can always re-add it later.',
     placement: 'bottom',
   },
 ];
@@ -145,5 +174,7 @@ export const tourRegistry: Record<string, Step[]> = {
   main: mainTourSteps,
   'custom-reports': customReportsTourSteps,
   'executive-summary': executiveSummaryTourSteps,
-  'my-dashboard': myDashboardTourSteps,
+  'my-dashboard': myDashboardPopulatedSteps,
+  'my-dashboard-empty': myDashboardEmptySteps,
+  'my-dashboard-populated': myDashboardPopulatedSteps,
 };

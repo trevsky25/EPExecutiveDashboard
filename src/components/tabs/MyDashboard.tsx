@@ -169,7 +169,7 @@ export default function MyDashboard({ onNavigateTab }: MyDashboardProps) {
           <div className="flex items-center gap-2 mb-1">
             <LayoutGrid size={20} className="text-[var(--color-ep-green)]" />
             <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">My Dashboard</h2>
-            <HelpButton tourId="my-dashboard" />
+            <HelpButton tourId={hasContent ? 'my-dashboard-populated' : 'my-dashboard-empty'} />
             {isEditMode && (
               <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-ep-orange)] bg-[var(--color-ep-orange)]/10 px-2 py-0.5 rounded-full">
                 Editing
@@ -234,6 +234,7 @@ export default function MyDashboard({ onNavigateTab }: MyDashboardProps) {
               </button>
               {hasContent && (
                 <button
+                  data-tour="md-edit"
                   onClick={enterEditMode}
                   className="flex items-center gap-2 px-3 py-2 border border-[var(--color-ep-blue)] text-[var(--color-ep-blue)] text-sm font-medium rounded-lg hover:bg-[var(--color-ep-blue)]/10 transition-colors cursor-pointer"
                   title="Edit dashboard layout"
@@ -333,7 +334,7 @@ export default function MyDashboard({ onNavigateTab }: MyDashboardProps) {
         </>
       ) : (
         /* ── Empty State ── */
-        <div className="flex flex-col items-center justify-center py-20 px-8 bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-border)]">
+        <div data-tour="md-empty" className="flex flex-col items-center justify-center py-20 px-8 bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-border)]">
           <div className="w-16 h-16 rounded-full bg-[var(--color-ep-green-light)] flex items-center justify-center mb-4">
             <Pin size={28} className="text-[var(--color-ep-green)]" />
           </div>
@@ -343,6 +344,7 @@ export default function MyDashboard({ onNavigateTab }: MyDashboardProps) {
           </p>
           <div className="flex items-center gap-3">
             <button
+              data-tour="md-browse"
               onClick={() => setKpiSelectorOpen(true)}
               className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-ep-green)] text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
             >
@@ -350,6 +352,7 @@ export default function MyDashboard({ onNavigateTab }: MyDashboardProps) {
               Browse KPIs
             </button>
             <button
+              data-tour="md-add-reports-empty"
               onClick={() => setReportSelectorOpen(true)}
               className="flex items-center gap-2 px-5 py-2.5 border border-[var(--color-border)] text-[var(--color-text-secondary)] text-sm font-medium rounded-lg hover:bg-[var(--color-hover-bg)] transition-colors cursor-pointer"
             >
